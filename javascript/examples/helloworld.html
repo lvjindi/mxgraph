@@ -1,0 +1,120 @@
+<!--
+  Copyright (c) 2006-2018, JGraph Ltd
+  
+  Hello, World! example for mxGraph. This example demonstrates using
+  a DOM node to create a graph and adding vertices and edges.
+-->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Hello, World! example for mxGraph</title>
+
+    <!-- Sets the basepath for the library if not in same directory -->
+    <script type="text/javascript">
+        mxBasePath = '../src';
+    </script>
+
+    <!-- Loads and initializes the library -->
+    <script type="text/javascript" src="../src/js/mxClient.js"></script>
+
+    <!-- Example code -->
+    <script type="text/javascript">
+        // Program starts here. Creates a sample graph in the
+        // DOM node with the specified ID. This function is invoked
+        // from the onLoad event handler of the document (see below).
+        function main(container) {
+            // Checks if the browser is supported
+            if (!mxClient.isBrowserSupported()) {
+                // Displays an error message if the browser is not supported.
+                mxUtils.error('Browser is not supported!', 200, false);
+            } else {
+                var doc = mxUtils.createXmlDocument();
+                var parameter = doc.createElement('parameter');
+
+                mxUtils.write(parameter, "parameter");
+
+                // Disables the built-in context menu
+                mxEvent.disableContextMenu(container);
+
+                // Creates the graph inside the given container
+                var graph = new mxGraph(container);
+
+                // Enables rubberband selection
+                new mxRubberband(graph);
+
+                // Gets the default parent for inserting new cells. This
+                // is normally the first child of the root (ie. layer 0).
+                var parent = graph.getDefaultParent();
+
+                // Adds cells to the model in a single step
+                // graph.getModel().beginUpdate();
+                // try {
+                var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+                var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+                var e1 = graph.insertEdge(parent, null, '', v1, v2, "x=x+1");
+                // } finally {
+                //     // Updates the display
+                //     graph.getModel().endUpdate();
+                // }
+                //开启tooltip功能，当鼠标放到节点或线上的时间就会显示提示信息
+                graph.setTooltips(true);
+                //鼠标划过时高亮显示
+                new mxCellTracker(graph, '#00FF00')
+                //开启“指引”功能，即在拖动节点时会有对齐线等提示效果
+                mxGraphHandler.prototype.guidesEnabled = true;
+                //可以使用mxEvent.disableContextMenu(container);来禁止弹出浏览器的右键菜单
+                //通过重写graph.popupMenuHandler.factoryMethod方法自定右键菜单
+                function createPopupMenu(graph, menu, cell, evt) {
+                    if (cell != null) {
+                        //节点右击
+                        menu.addItem('节点菜单项', 'http://img.t.sinajs.cn/t4/appstyle/expression/ext/normal/37/moren_chongjing_org.png', function () {
+                            mxUtils.alert('Hello Cell');
+                        })
+                    } else {
+                        menu.addItem('画布菜单项', function () {
+                            mxUtils.alert('Hello Canvas!')
+                        })
+                    }
+                    //添加分隔线
+                    menu.addSeparator();
+                    menu.addItem('通用菜单项', 'images/add.png', function () {
+                        mxUtils.alert(graph.getSelectionCount());
+                    })
+
+
+                }
+
+                graph.popupMenuHandler.factoryMethod = function (menu, cell, evt) {
+                    return createPopupMenu(graph, menu, cell, evt);
+                }
+
+
+                // mxUtils.para(parent, "parameter");
+                var enc = new mxCodec();
+                alert(e1.getAttribute())
+                var root = graph.getModel().getRoot();
+                alert(root)
+                root.setAttribute("parameter", "parameter");
+
+                var node = enc.encode(graph.getModel());
+
+                var xml = mxUtils.getXml(node);
+                // mxUtils.popup(mxUtils.getXml(node));
+                //The output of the encoding may be viewed using mxLog
+                mxLog.show();
+                mxLog.debug(mxUtils.getPrettyXml(node));
+
+            }
+        };
+    </script>
+</head>
+
+<!-- Page passes the container for the graph to the program -->
+<body onload="main(document.getElementById('graphContainer'))">
+
+<!-- Creates a container for the graph with a grid wallpaper -->
+<div id="graphContainer"
+     style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+</div>
+</body>
+</html>

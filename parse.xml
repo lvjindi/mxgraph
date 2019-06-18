@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<nta>
+  <declaration>typedef int[1,6] id_t; int id;</declaration>
+  <template>
+    <name>Drawing5.xml</name>
+    <parameter>const id_t pid</parameter>
+    <declaration>clock x; const int k = 2;</declaration>
+    <location x="40" y="170" id="2">
+      <name>A</name>
+      <label kind="invariant"></label>
+    </location>
+    <location x="373" y="170" id="3">
+      <name>req</name>
+      <label kind="invariant">x&lt;=k</label>
+    </location>
+    <location x="40" y="410" id="4">
+      <name>cs</name>
+    </location>
+    <location x="373" y="410" id="5">
+      <name>wait</name>
+    </location>
+    <init ref="2"/>
+    <transition>
+      <source ref="2"/>
+      <target ref="3"/>
+      <label kind="guard">id==0</label>
+      <label kind="assignment">x=0</label>
+    </transition>
+    <transition>
+      <source ref="3"/>
+      <target ref="5"/>
+      <label kind="guard">x&lt;=k</label>
+      <label kind="assignment">x=0,id=pid</label>
+    </transition>
+    <transition>
+      <source ref="4"/>
+      <target ref="2"/>
+      <label kind="guard">id==0</label>
+    </transition>
+    <transition>
+      <source ref="5"/>
+      <target ref="4"/>
+      <label kind="guard">x&gt;k&amp;&amp;id==pid</label>
+    </transition>
+    <transition>
+      <source ref="5"/>
+      <target ref="3"/>
+      <label kind="guard">id==0</label>
+      <label kind="assignment">x=0</label>
+    </transition>
+  </template>
+</nta>
