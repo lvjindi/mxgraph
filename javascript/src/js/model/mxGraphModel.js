@@ -222,31 +222,17 @@ mxGraphModel.prototype.root = null;
 //-----------------------------------------------------------------New Add--------------------------------------------------------------
 
 /**
- *
- * 新添参数：parameter
- * */
-mxGraphModel.prototype.parameter = '';
-
-mxGraphModel.prototype.setParameter = function (parameter) {
-    this.parameter = parameter;
-}
-
-mxGraphModel.prototype.getParameter = function () {
-    return this.parameter;
-}
-
-/**
  * 新添参数：declaration
  * */
-mxGraphModel.prototype.declaration = '';
+mxGraphModel.prototype.dec = '';
 
-mxGraphModel.prototype.setDeclaration = function (declaration) {
-    this.declaration = declaration;
+mxGraphModel.prototype.setDec = function (declaration) {
+    this.dec = declaration;
 
 }
 
-mxGraphModel.prototype.getDeclaration = function (declaration) {
-    return this.declaration;
+mxGraphModel.prototype.getDec = function () {
+    return this.dec;
 
 }
 //------------------------------------------------------------------------------------------------------------------
@@ -1527,7 +1513,38 @@ mxGraphModel.prototype.setName = function (cell, value) {
 
     return value;
 };
+/**
+ * Function: setParameter
+ *
+ * Sets the user object of then given <mxCell> using <mxValueChange>
+ * and adds the change to the current transaction.
+ *
+ * Parameters:
+ *
+ * cell - <mxCell> whose user object should be changed.
+ * value - Object that defines the new user object.
+ */
+mxGraphModel.prototype.setParameter = function (cell, value) {
+    this.execute(new mxParameterChange(this, cell, value));
 
+    return value;
+};
+/**
+ * Function: setParameter
+ *
+ * Sets the user object of then given <mxCell> using <mxValueChange>
+ * and adds the change to the current transaction.
+ *
+ * Parameters:
+ *
+ * cell - <mxCell> whose user object should be changed.
+ * value - Object that defines the new user object.
+ */
+mxGraphModel.prototype.setDeclaration = function (cell, value) {
+    this.execute(new mxDeclarationChange(this, cell, value));
+
+    return value;
+};
 /**
  * Function: setInvariant
  *
@@ -1587,6 +1604,12 @@ mxGraphModel.prototype.valueForCellChanged = function (cell, value) {
 
 mxGraphModel.prototype.nameForCellChanged = function (cell, value) {
     return cell.nameChanged(value);
+};
+mxGraphModel.prototype.parameterForCellChanged = function (cell, value) {
+    return cell.parameterChanged(value);
+};
+mxGraphModel.prototype.declarationForCellChanged = function (cell, value) {
+    return cell.declarationChanged(value);
 };
 
 mxGraphModel.prototype.invariantForCellChanged = function (cell, value) {
@@ -2374,6 +2397,40 @@ function mxNameChange(model, cell, value) {
 };
 
 /**
+ * Class: mxParameterChange
+ *
+ * Action to change a user object in a model.
+ *
+ * Constructor: mxValueChange
+ *
+ * Constructs a change of a user object in the
+ * specified model.
+ */
+function mxParameterChange(model, cell, value) {
+    this.model = model;
+    this.cell = cell;
+    this.parameter = value;
+    this.previous = value;
+};
+
+/**
+ * Class: mxDeclarationChange
+ *
+ * Action to change a user object in a model.
+ *
+ * Constructor: mxValueChange
+ *
+ * Constructs a change of a user object in the
+ * specified model.
+ */
+function mxDeclarationChange(model, cell, value) {
+    this.model = model;
+    this.cell = cell;
+    this.declaration = value;
+    this.previous = value;
+};
+
+/**
  * Class: mxInvariantChange
  *
  * Action to change a user object in a model.
@@ -2433,7 +2490,33 @@ mxNameChange.prototype.execute = function () {
             this.cell, this.previous);
     }
 };
+/**
+ * Function: execute
+ *
+ * Changes the value of <cell> to <previous> using
+ * <mxGraphModel.valueForCellChanged>.
+ */
+mxParameterChange.prototype.execute = function () {
+    if (this.cell != null) {
+        this.parameter = this.previous;
+        this.previous = this.model.parameterForCellChanged(
+            this.cell, this.previous);
+    }
+};
 
+/**
+ * Function: execute
+ *
+ * Changes the value of <cell> to <previous> using
+ * <mxGraphModel.valueForCellChanged>.
+ */
+mxDeclarationChange.prototype.execute = function () {
+    if (this.cell != null) {
+        this.declaration = this.previous;
+        this.previous = this.model.declarationForCellChanged(
+            this.cell, this.previous);
+    }
+};
 /**
  * Function: execute
  *

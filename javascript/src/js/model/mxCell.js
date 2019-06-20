@@ -140,20 +140,30 @@ mxCell.prototype.sync = null;
 mxCell.prototype.update = null;
 
 /**
- * Variable: name
+ * Variable: name for automaton
  *
  */
 mxCell.prototype.name = null;
 /**
- * Variable: invariant
+ * Variable: invariant for automaton
  *
  */
 mxCell.prototype.invariant = null;
 /**
- * Variable: Rate of Exponential
+ * Variable: Rate of Exponential for automaton
  *
  */
 mxCell.prototype.rateOfExpoential = null;
+/**
+ * Variable: parameter for template
+ *
+ */
+mxCell.prototype.parameter = null;
+/**
+ * Variable: declaration for template
+ *
+ */
+mxCell.prototype.declaration = null;
 /**
  * Variable: Rate of initial
  *
@@ -169,6 +179,8 @@ mxCell.prototype.urgent = false;
  *
  */
 mxCell.prototype.committed = false;
+
+
 //--------------------------------------------------------------------------------------------
 
 
@@ -300,6 +312,19 @@ mxCell.prototype.nameChanged = function (newValue) {
     return previous;
 };
 
+mxCell.prototype.parameterChanged = function (newValue) {
+    var previous = this.getParameter();
+    this.setParameter(newValue);
+
+    return previous;
+};
+
+mxCell.prototype.declarationChanged = function (newValue) {
+    var previous = this.getDeclaration();
+    this.setDeclaration(newValue);
+
+    return previous;
+};
 mxCell.prototype.invariantChanged = function (newValue) {
     var previous = this.getInvariant();
     this.setInvariant(newValue);
@@ -461,6 +486,38 @@ mxCell.prototype.getRateOfExponential = function () {
  */
 mxCell.prototype.setRateOfExpoential = function (rateOfExpoential) {
     this.rateOfExpoential = rateOfExpoential;
+}
+/**
+ * Function: getParameter
+ *
+ * Returns a string that describes the parameter.
+ */
+mxCell.prototype.getParameter = function () {
+    return this.parameter;
+}
+/**
+ * Function: setParameter
+ *
+ * Sets the string to be used as the parameter.
+ */
+mxCell.prototype.setParameter = function (parameter) {
+    this.parameter = parameter;
+}
+/**
+ * Function: getDeclaration
+ *
+ * Returns a string that describes the declaration.
+ */
+mxCell.prototype.getDeclaration = function () {
+    return this.declaration;
+}
+/**
+ * Function: setDeclaration
+ *
+ * Sets the string to be used as the declaration.
+ */
+mxCell.prototype.setDeclaration = function (declaration) {
+    this.declaration = declaration;
 }
 /**
  * Function: getInitial

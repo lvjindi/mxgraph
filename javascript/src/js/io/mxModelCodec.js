@@ -21,11 +21,10 @@ mxCodecRegistry.register(function () {
      */
     codec.encodeObject = function (enc, obj, node) {
         var rootNode = enc.document.createElement('root');
-        var parameter = enc.document.createElement("parameter");
         var declaration = enc.document.createElement("declaration");
-        mxUtils.setTextContent(parameter, obj.getParameter());
-        mxUtils.setTextContent(declaration, obj.getDeclaration());
-        rootNode.appendChild(parameter);
+        //mxUtils.setTextContent(parameter, obj.getParameter());
+        mxUtils.setTextContent(declaration, obj.getDec());
+        //rootNode.appendChild(parameter);
         rootNode.appendChild(declaration);
         enc.encodeCell(obj.getRoot(), rootNode);
         node.appendChild(rootNode);

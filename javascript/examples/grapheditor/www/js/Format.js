@@ -2651,6 +2651,8 @@ TextFormatPanel.prototype.addFont = function (container) {
     //---------------------------------------------  new replenish-----------------------------------------------------------
 
     var cell = graph.getSelectionCell();
+    var state = graph.view.getState(cell);
+
     if (graph.getModel().isEdge(cell)) {
 
         var guardPanel = this.createPanel();
@@ -2684,7 +2686,8 @@ TextFormatPanel.prototype.addFont = function (container) {
         createExtraInput(updateTitle, 'update', container, guardPanel);
 
 
-    } else if (graph.getModel().isVertex(cell)) {
+    } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'automaton' ||
+        mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'initial') {
 
         var namePanel = this.createPanel();
         namePanel.style.paddingTop = '10px';
@@ -2722,6 +2725,26 @@ TextFormatPanel.prototype.addFont = function (container) {
         createCheckbox(cell, div, 'urgent', container, selectPanel)
         createCheckbox(cell, div, 'committed', container, selectPanel)
 
+
+    } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'swimlane') {
+
+        var templatePanel = this.createPanel();
+        templatePanel.style.paddingTop = '10px';
+        templatePanel.style.paddingBottom = '28px';
+        templatePanel.style.fontWeight = 'normal';
+
+        var parameterTitle = this.createTitle(mxResources.get('parameter'));
+        title.style.paddingLeft = '5px';
+        title.style.paddingTop = '5px';
+        title.style.paddingBottom = '4px';
+
+        var declarationTitle = this.createTitle(mxResources.get('declaration'));
+        title.style.paddingLeft = '5px';
+        title.style.paddingTop = '5px';
+        title.style.paddingBottom = '4px';
+
+        createExtraInput(parameterTitle, 'parameter', container, templatePanel);
+        createExtraInput(declarationTitle, 'declaration', container, templatePanel);
 
     }
 
@@ -2780,6 +2803,28 @@ TextFormatPanel.prototype.addFont = function (container) {
                 graph.getModel().beginUpdate();
                 try {
                     graph.getModel().setRateOfExponential(cell, input.value);
+                } finally {
+                    graph.getModel().endUpdate();
+                }
+                mxEvent.consume(evt);
+            })
+        } else if (label == 'parameter') {
+            input.value = cell.getParameter() != null ? cell.getParameter() : '';
+            mxEvent.addListener(input, 'change', function (evt) {
+                graph.getModel().beginUpdate();
+                try {
+                    graph.getModel().setParameter(cell, input.value);
+                } finally {
+                    graph.getModel().endUpdate();
+                }
+                mxEvent.consume(evt);
+            })
+        } else if (label == 'declaration') {
+            input.value = cell.getDeclaration() != null ? cell.getDeclaration() : '';
+            mxEvent.addListener(input, 'change', function (evt) {
+                graph.getModel().beginUpdate();
+                try {
+                    graph.getModel().setDeclaration(cell, input.value);
                 } finally {
                     graph.getModel().endUpdate();
                 }
@@ -2854,7 +2899,7 @@ TextFormatPanel.prototype.addFont = function (container) {
         container.appendChild(div);
         selectPanel.appendChild(div);
         container.appendChild(selectPanel);
-        mxEvent.addListener(cb, 'change', function () {
+        mxEvent.addListener(cb, 'change', function (evt) {
             if (cb.checked) {
                 cb.setAttribute('checked', 'checked');
                 cb.defaultChecked = true;
@@ -2916,11 +2961,10 @@ TextFormatPanel.prototype.addFont = function (container) {
     function edgeStringToValue(cell, value) {
         if (value != null) {
             var select = (cell.getSelect() == null) ? '' : cell.getSelect();
-            alert(select)
             var guard = (cell.getGuard() == null) ? '' : cell.getGuard();
             var sync = (cell.getSync() == null) ? '' : cell.getSync();
             var update = (cell.getUpdate() == null) ? '' : cell.getUpdate();
-            var str = "update:" + update + "  guard:" + guard;
+            var str = "U:" + update + "  G:" + guard;
             // '<b><font color="#7fff00">' + guard + '</font></b><br>' +
             // '<b><font color="#483d8b">' + update + '</font></b><br>' +
             // '<b><font color="#b8860b">' + sync + '</font></b>';
@@ -3570,7 +3614,8 @@ TextFormatPanel.prototype.addFont = function (container) {
     }
 
     return container;
-};
+}
+;
 
 /**
  * Adds the label menu items to the given menu and parent.
@@ -5074,65 +5119,22 @@ DiagramFormatPanel.prototype.addParameter = function (div) {
     var editor = ui.editor;
     var graph = editor.graph;
 
-    div.appendChild(this.createTitle(mxResources.get('parameter')));
+    div.appendChild(this.createTitle(mxResources.get('declaration')));
 
     var input = document.createElement('input');
     input.style.textAlign = 'left';
     input.style.marginTop = '4px';
     input.style.marginBottom = "6px";
-    input.setAttribute('type', 'text');
     div.appendChild(input);
 
-    div.appendChild(this.createTitle(mxResources.get('declaration')));
-    var input1 = input.cloneNode(false);
-    div.appendChild(input1);
 
-    input.value = graph.getModel().getParameter();
-    input1.value = graph.getModel().getDeclaration();
+    input.value = graph.getModel().getDec();
+    // alert(graph.getModel().getDec());
     mxEvent.addListener(input, 'change', function (evt) {
-        graph.getModel().setParameter(input.value);
-        mxEvent.consume(evt);
-    })
-    mxEvent.addListener(input1, 'change', function (evt) {
-        graph.getModel().setDeclaration(input1.value);
+        graph.getModel().setDec(input.value);
         mxEvent.consume(evt);
     })
 
-    // var accessor = PageSetupDialog.addPageFormatPanel(div, 'formatpanel', graph.pageFormat, function (pageFormat) {
-    //     if (graph.pageFormat == null || graph.pageFormat.width != pageFormat.width ||
-    //         graph.pageFormat.height != pageFormat.height) {
-    //         var change = new ChangePageSetup(ui, null, null, pageFormat);
-    //         change.ignoreColor = true;
-    //         change.ignoreImage = true;
-    //
-    //         graph.model.execute(change);
-    //     }
-    // });
-    //
-    // this.addKeyHandler(accessor.widthInput, function () {
-    //     accessor.set(graph.pageFormat);
-    // });
-    // this.addKeyHandler(accessor.heightInput, function () {
-    //     accessor.set(graph.pageFormat);
-    // });
-    //
-    // var listener = function () {
-    //     accessor.set(graph.pageFormat);
-    // };
-    //
-    // ui.addListener('pageFormatChanged', listener);
-    // this.listeners.push({
-    //     destroy: function () {
-    //         ui.removeListener(listener);
-    //     }
-    // });
-    //
-    // graph.getModel().addListener(mxEvent.CHANGE, listener);
-    // this.listeners.push({
-    //     destroy: function () {
-    //         graph.getModel().removeListener(listener);
-    //     }
-    // });
 
     return div;
 };

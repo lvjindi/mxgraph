@@ -779,7 +779,7 @@ Sidebar.prototype.addTimedAutomataPalette = function (expand) {
     var fns = [
         this.createVertexTemplateEntry('shape=automaton;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Automaton', null, null, 'automaton'),
         this.createVertexTemplateEntry('shape=initial;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Initial', null, null, 'initial'),
-
+        this.createVertexTemplateEntry('swimlane;', 300, 300, 'Template', 'Template', null, null, 'Template'),
 
     ];
 
@@ -1843,6 +1843,15 @@ Sidebar.prototype.createDropHandler = function (cells, allowSplit, allowCellsIns
                                 x - bounds.width / 2, y - bounds.height / 2);
                             select = clones;
                         } else if (cells.length > 0) {
+                            //
+                            // for (i = 0; i < cells.length; i++) {
+                            //     var style = cells[i].getStyle();
+                            //     alert(style);
+                            //     if (style.indexOf("template") != -1) {
+                            //         cells[i].collapsed = true;
+                            //         alert("jinlaile");
+                            //     }
+                            // }
                             select = graph.importCells(cells, x, y, target);
                         }
 

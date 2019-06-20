@@ -1129,8 +1129,8 @@
         };
         AutomatonShape.prototype.paintBackground = function (c, x, y, w, h) {
             if (this.state != null && this.state.cell.geometry != null && !this.state.cell.geometry.relative) {
-                c.setFontColor('#a0a0a0');
-                c.text(x + w / 2, y - h / 3, 0, 0, (this.state.cell.name != null) ? this.state.cell.name : '', 'center');
+                c.setFontColor('#A52A2A');
+                c.text(x, y - h / 3, 0, 0, (this.state.cell.name != null) ? this.state.cell.name : '', 'center');
                 c.setFontColor('#a0a0a0');
                 c.text(x - w / 3, y + h / 5, 0, 0, (this.state.cell.invariant != null) ? this.state.cell.invariant : '', 'center');
                 c.setFontColor('#a0a0a0');
@@ -1171,8 +1171,8 @@
         };
         InitialShape.prototype.paintBackground = function (c, x, y, w, h) {
             if (this.state != null && this.state.cell.geometry != null && !this.state.cell.geometry.relative) {
-                c.setFontColor('#a0a0a0');
-                c.text(x + w / 2, y - h / 3, 0, 0, (this.state.cell.name != null) ? this.state.cell.name : '', 'center');
+                c.setFontColor('#A52A2A');
+                c.text(x, y - h / 3, 0, 0, (this.state.cell.name != null) ? this.state.cell.name : '', 'center');
                 c.setFontColor('#a0a0a0');
                 c.text(x - w / 3, y + h / 5, 0, 0, (this.state.cell.invariant != null) ? this.state.cell.invariant : '', 'center');
                 c.setFontColor('#a0a0a0');
@@ -1214,6 +1214,54 @@
         }
         // Replaces existing actor shape
         mxCellRenderer.registerShape('initial', InitialShape);
+
+        // Template Shape
+        function TemplateShape() {
+            mxShape.call(this);
+        };
+        mxUtils.extend(TemplateShape, mxShape);
+
+        TemplateShape.prototype.getLabelMargins = function (rect) {
+            return new mxRectangle(rect.width / 6, 0, 0, 0);
+        };
+        TemplateShape.prototype.paintBackground = function (c, x, y, w, h) {
+
+            c.rect(x, y, w, h);
+            c.fillAndStroke();
+        };
+        TemplateShape.prototype.isHtmlAllowed = function () {
+            var events = true;
+
+            if (this.style != null) {
+                events = mxUtils.getValue(this.style, mxConstants.STYLE_POINTER_EVENTS, '1') == '1';
+            }
+
+            return !this.isRounded && !this.glass && this.rotation == 0 && (events ||
+                (this.fill != null && this.fill != mxConstants.NONE));
+        };
+
+        var mxInitialShapeIsHtmlAllowed = InitialShape.prototype.isHtmlAllowed;
+        TemplateShape.prototype.isHtmlAllowed = function () {
+            return mxInitialShapeIsHtmlAllowed.apply(this, arguments) && this.state == null;
+        };
+        // TemplateShape.prototype.paintForeground = function (c, x, y, w, h) {
+        //     if (!this.outline) {
+        //         var margin = mxUtils.getValue(this.style, mxConstants.STYLE_MARGIN, Math.min(3 + this.strokewidth, Math.min(w / 5, h / 5)));
+        //         x += margin;
+        //         y += margin;
+        //         w -= 2 * margin;
+        //         h -= 2 * margin;
+        //
+        //         // FIXME: Rounding issues in IE8 standards mode (not in 1.x)
+        //         if (w > 0 && h > 0) {
+        //             c.ellipse(x, y, w, h);
+        //         }
+        //
+        //         c.stroke();
+        //     }
+        // }
+        // Replaces existing actor shape
+        mxCellRenderer.registerShape('template', TemplateShape);
 //---------------------------------------------------------------------------------------------------------------------
 
 

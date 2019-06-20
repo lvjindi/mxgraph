@@ -1,53 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <nta>
-  <declaration>typedef int[1,6] id_t; int id;</declaration>
+  <declaration>chan take, release;int[0,1] L;clock time;</declaration>
   <template>
-    <name>Drawing5.xml</name>
-    <parameter>const id_t pid</parameter>
-    <declaration>clock x; const int k = 2;</declaration>
-    <location x="40" y="170" id="2">
-      <name>A</name>
-      <label kind="invariant"></label>
+    <name>Soldier</name>
+    <parameter>const int delay</parameter>
+    <declaration>clock y;</declaration>
+    <location x="40" y="60" id="3">
+      <name>unsafe</name>
     </location>
-    <location x="373" y="170" id="3">
-      <name>req</name>
-      <label kind="invariant">x&lt;=k</label>
+    <location x="210" y="60" id="4"/>
+    <location x="40" y="200" id="5"/>
+    <location x="210" y="200" id="6">
+      <name>safe</name>
     </location>
-    <location x="40" y="410" id="4">
-      <name>cs</name>
-    </location>
-    <location x="373" y="410" id="5">
-      <name>wait</name>
-    </location>
-    <init ref="2"/>
-    <transition>
-      <source ref="2"/>
-      <target ref="3"/>
-      <label kind="guard">id==0</label>
-      <label kind="assignment">x=0</label>
-    </transition>
+    <init ref="3"/>
     <transition>
       <source ref="3"/>
-      <target ref="5"/>
-      <label kind="guard">x&lt;=k</label>
-      <label kind="assignment">x=0,id=pid</label>
+      <target ref="4"/>
+      <label kind="guard">L==0</label>
+      <label kind="assignment">y=0</label>
+      <label kind="synchronisation">take!</label>
     </transition>
     <transition>
       <source ref="4"/>
-      <target ref="2"/>
-      <label kind="guard">id==0</label>
-    </transition>
-    <transition>
-      <source ref="5"/>
-      <target ref="4"/>
-      <label kind="guard">x&gt;k&amp;&amp;id==pid</label>
+      <target ref="6"/>
+      <label kind="guard">y&gt;=delay</label>
+      <label kind="synchronisation">release</label>
     </transition>
     <transition>
       <source ref="5"/>
       <target ref="3"/>
-      <label kind="guard">id==0</label>
-      <label kind="assignment">x=0</label>
+      <label kind="guard">y&gt;=delay</label>
+      <label kind="synchronisation">release!</label>
+    </transition>
+    <transition>
+      <source ref="6"/>
+      <target ref="5"/>
+      <label kind="guard">L==1</label>
+      <label kind="assignment">y=0</label>
+      <label kind="synchronisation">take!</label>
+    </transition>
+  </template>
+  <template>
+    <name>Torch</name>
+    <location x="130" y="50" id="12"/>
+    <location x="20" y="120" id="13">
+      <name>free</name>
+    </location>
+    <location x="230" y="120" id="14">
+      <name>two</name>
+    </location>
+    <location x="130" y="200" id="15">
+      <name>one</name>
+    </location>
+    <init ref="13"/>
+    <transition>
+      <source ref="12"/>
+      <target ref="14"/>
+      <label kind="synchronisation">take?</label>
+    </transition>
+    <transition>
+      <source ref="13"/>
+      <target ref="12"/>
+      <label kind="synchronisation">take?</label>
+    </transition>
+    <transition>
+      <source ref="14"/>
+      <target ref="15"/>
+      <label kind="synchronisation">release?</label>
+    </transition>
+    <transition>
+      <source ref="15"/>
+      <target ref="13"/>
+      <label kind="assignment">L=1-L</label>
+      <label kind="synchronisation">release?</label>
     </transition>
   </template>
 </nta>

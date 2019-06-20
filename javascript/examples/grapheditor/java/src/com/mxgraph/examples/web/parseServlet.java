@@ -13,73 +13,114 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
 public class parseServlet extends HttpServlet {
-    public static void main(String[] args) throws Exception {
 
+    public static void main(String[] args) throws Exception {
+        parseXml();
+
+    }
+
+    public static void parseXml() throws Exception {
         SAXReader reader = new SAXReader();
-        File file = new File("E:\\LabProject\\mxgraph\\Drawing5.xml");
-        Document doc = reader.read(file);
-        Document doc1 = DocumentHelper.createDocument();
+        File file = new File("E:\\LabProject\\mxgraph\\Drawing1.xml");
+        Document doc = reader.read(file);//read
+
+        Document doc1 = DocumentHelper.createDocument();//write
         Element root1 = doc1.addElement("nta");
-        Element declaration = root1.addElement("declaration");
-        declaration.addText("typedef int[1,6] id_t;\n" +
-                "int id;");
-        Element template = root1.addElement("template");
-        Element name = template.addElement("name");
-        name.addText(file.getName());
+
+        List<Element> templateList = new ArrayList<>();
         List<Element> vertexList = new ArrayList<>();
         List<Element> edgeList = new ArrayList<>();
 
         Element root = doc.getRootElement();
         Element list = root.element("root");
+        List<Element> cellList = list.elements();
+        Iterator<Element> iterator = cellList.iterator();
 
-        if (haschildren(list)) {
-            List<Element> cellList = list.elements();
-            Iterator<Element> iterator = cellList.iterator();
-            while (iterator.hasNext()) {
-                Element cell = iterator.next();
-                System.out.print("节点名：" + cell.getName() + '\n');
-                if (findCellAttribute(cell, "vertex") != null) {
-                    vertexList.add(cell);
-                } else if (findCellAttribute(cell, "edge") != null) {
-                    edgeList.add(cell);
-                } else {
-                    if (cell.getName() != "mxCell") {
-                        Element point = template.addElement(cell.getName());
-                        point.addText(cell.getText());
-                    }
-                }
+        while (iterator.hasNext()) {
+            Element cell = iterator.next();
+            Attribute style = findCellAttribute(cell, "style");
+
+            if (cell.getName() == "declaration") {
+                Element declaration = root1.addElement("declaration");
+                declaration.addText(cell.getText());
             }
 
-            String initialId = new String("");
-            for (Element item : vertexList) {
-                createVertex(template, item);
-                Attribute attrId = findCellAttribute(item, "id");
-                Attribute attrInitial = findCellAttribute(item, "initial");
-                if (attrInitial != null) {
-                    initialId = attrId.getValue();
-                }
+            if (style != null && style.getValue().indexOf("swimlane") != -1) {
+                templateList.add(cell);
             }
-            Element initial = template.addElement("init");
-            initial.addAttribute("ref", initialId);
-            for (Element item : edgeList) {
-                createEdge(template, item);
+
+            if (findCellAttribute(cell, "vertex") != null) {
+                vertexList.add(cell);
+            } else if (findCellAttribute(cell, "edge") != null) {
+                edgeList.add(cell);
             }
 
         }
+
+        for (Element item : templateList) {
+            String initialId = "";
+            Attribute attrId = findCellAttribute(item, "id");
+            Element template = createTemplate(root1, item);
+
+            String id = attrId.getValue();
+            Iterator<Element> vertexIterator = vertexList.iterator();
+            Iterator<Element> edgeIterator = edgeList.iterator();
+
+            while (vertexIterator.hasNext()) {
+                Element vertex = vertexIterator.next();
+                Attribute parent = findCellAttribute(vertex, "parent");
+                Attribute attrInitial = findCellAttribute(vertex, "initial");
+                if (parent.getValue().equals(id)) {
+                    if (attrInitial != null) {
+                        Attribute vertexId = findCellAttribute(vertex, "id");
+                        initialId = vertexId.getValue();
+                    }
+                    createVertex(template, vertex);
+                }
+            }
+
+            Element initial = template.addElement("init");
+            initial.addAttribute("ref", initialId);
+
+            while (edgeIterator.hasNext()) {
+                Element edge = edgeIterator.next();
+                Attribute parent = findCellAttribute(edge, "parent");
+                if (parent.getValue().equals(id)) {
+                    createEdge(template, edge);
+                }
+            }
+        }
+
         XMLWriter writer = new XMLWriter(new FileOutputStream("parse.xml"),
                 OutputFormat.createPrettyPrint());
         writer.write(doc1);
-        System.out.println("写出完毕");
         writer.close();
-
     }
 
+    public static Element createTemplate(Element root1, Element item) {
+        Attribute attrName = findCellAttribute(item, "value");
+        Attribute attrDeclaration = findCellAttribute(item, "declaration");
+        Attribute attrParameter = findCellAttribute(item, "parameter");
+        Element template = root1.addElement("template");
+        Element name = template.addElement("name");
+        name.addText(attrName.getValue());
+        if (attrParameter != null) {
+            Element parameter = template.addElement("parameter");
+            parameter.addText(attrParameter.getValue());
+        }
+        if (attrDeclaration != null) {
+            Element declaration = template.addElement("declaration");
+            declaration.addText(attrDeclaration.getValue());
+        }
+        return template;
+    }
 
     public static void createLabel(Element ele, Attribute attr) {
         Element guard = ele.addElement("label");
         if (attr.getName() == "update") {
-
             guard.addAttribute("kind", "assignment");
+        } else if (attr.getName() == "sync") {
+            guard.addAttribute("kind", "synchronisation");
         } else {
             guard.addAttribute("kind", attr.getName());
         }
@@ -151,6 +192,7 @@ public class parseServlet extends HttpServlet {
                 Attribute attrTarget = findCellAttribute(ele, "target");
                 Attribute attrGuard = findCellAttribute(ele, "guard");
                 Attribute attrUpdate = findCellAttribute(ele, "update");
+                Attribute attrSyn = findCellAttribute(ele, "sync");
                 if (attrSource != null && attrTarget != null) {
                     Element source = vertex.addElement(attrSource.getName());
                     Element target = vertex.addElement(attrTarget.getName());
@@ -161,6 +203,9 @@ public class parseServlet extends HttpServlet {
                     }
                     if (attrUpdate != null) {
                         createLabel(vertex, attrUpdate);
+                    }
+                    if (attrSyn != null) {
+                        createLabel(vertex, attrSyn);
                     }
                 }
             }
