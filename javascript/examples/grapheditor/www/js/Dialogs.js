@@ -778,6 +778,179 @@ var EditDiagramDialog = function (editorUi) {
 };
 
 /**
+ * Constructs a new edit vertex(for timed automata) dialog.
+ */
+var EditVertexDialog = function (editorUi) {
+    var cell = editorUi.editor.graph.getSelectionCell();
+    var div = document.createElement('div');
+    // div.style.textAlign = 'left';
+    var textareaName = document.createElement('textarea');
+    textareaName.setAttribute('wrap', 'off');
+    textareaName.setAttribute('spellcheck', 'false');
+    textareaName.setAttribute('autocorrect', 'off');
+    textareaName.setAttribute('autocomplete', 'off');
+    textareaName.setAttribute('autocapitalize', 'off');
+    textareaName.style.overflow = 'auto';
+    textareaName.style.resize = 'none';
+    textareaName.style.width = '550px';
+    textareaName.style.height = '100px';
+    textareaName.style.marginBottom = '16px';
+
+    var labelName = document.createElement('label');
+    labelName.style.fontSize = '14px';
+    labelName.style.cssFloat = 'left';
+    labelName.style.marginRight = '3px';
+    labelName.style.marginBottom = '5px';
+    //labelName.style.marginTop = '10px';
+    var labelInv = labelName.cloneNode();
+    var labelRate = labelName.cloneNode();
+
+    var br = document.createElement('br');
+    mxUtils.write(labelName, mxResources.get('name') + ':');
+    mxUtils.write(labelInv, mxResources.get('invariant') + ':');
+    mxUtils.write(labelRate, mxResources.get('rateOfExponential') + ':');
+
+
+    var textareaInv = textareaName.cloneNode();
+    var textareaRate = textareaName.cloneNode();
+
+
+    textareaName.value = cell.getName();
+    textareaInv.value = cell.getInvariant();
+    textareaRate.value = cell.getRateOfExponential();
+
+    div.appendChild(labelName);
+    div.appendChild(textareaName);
+    div.appendChild(labelInv);
+    div.appendChild(textareaInv);
+    div.appendChild(labelRate);
+    div.appendChild(textareaRate);
+
+    this.init = function () {
+        textareaName.focus();
+    };
+
+    // Enables dropping files
+    // if (Graph.fileSupport) {
+    //     function handleDrop(evt) {
+    //         evt.stopPropagation();
+    //         evt.preventDefault();
+    //
+    //         if (evt.dataTransfer.files.length > 0) {
+    //             var file = evt.dataTransfer.files[0];
+    //             var reader = new FileReader();
+    //
+    //             reader.onload = function (e) {
+    //                 textareaName.value = e.target.result;
+    //             };
+    //
+    //             reader.readAsText(file);
+    //         } else {
+    //             textareaName.value = editorUi.extractGraphModelFromEvent(evt);
+    //         }
+    //     };
+    //
+    //     function handleDragOver(evt) {
+    //         evt.stopPropagation();
+    //         evt.preventDefault();
+    //     };
+    //
+    //     // Setup the dnd listeners.
+    //     textareaName.addEventListener('dragover', handleDragOver, false);
+    //     textareaName.addEventListener('drop', handleDrop, false);
+    // }
+
+    var cancelBtn = mxUtils.button(mxResources.get('cancel'), function () {
+        editorUi.hideDialog();
+    });
+    cancelBtn.className = 'geBtn';
+
+    if (editorUi.editor.cancelFirst) {
+        div.appendChild(cancelBtn);
+    }
+
+    // var select = document.createElement('select');
+    // select.style.width = '180px';
+    // select.className = 'geBtn';
+    //
+    // if (editorUi.editor.graph.isEnabled()) {
+    //     var replaceOption = document.createElement('option');
+    //     replaceOption.setAttribute('value', 'replace');
+    //     mxUtils.write(replaceOption, mxResources.get('replaceExistingDrawing'));
+    //     select.appendChild(replaceOption);
+    // }
+    //
+    // var newOption = document.createElement('option');
+    // newOption.setAttribute('value', 'new');
+    // mxUtils.write(newOption, mxResources.get('openInNewWindow'));
+    //
+    // if (EditDiagramDialog.showNewWindowOption) {
+    //     select.appendChild(newOption);
+    // }
+    //
+    // if (editorUi.editor.graph.isEnabled()) {
+    //     var importOption = document.createElement('option');
+    //     importOption.setAttribute('value', 'import');
+    //     mxUtils.write(importOption, mxResources.get('addToExistingDrawing'));
+    //     select.appendChild(importOption);
+    // }
+    //
+    // div.appendChild(select);
+
+    var okBtn = mxUtils.button(mxResources.get('ok'), function () {
+        // Removes all illegal control characters before parsing
+        var data = Graph.zapGremlins(mxUtils.trim(textarea.value));
+        var error = null;
+
+        if (select.value == 'new') {
+            editorUi.hideDialog();
+            editorUi.editor.editAsNew(data);
+        } else if (select.value == 'replace') {
+            editorUi.editor.graph.model.beginUpdate();
+            try {
+                editorUi.editor.setGraphXml(mxUtils.parseXml(data).documentElement);
+                // LATER: Why is hideDialog between begin-/endUpdate faster?
+                editorUi.hideDialog();
+            } catch (e) {
+                error = e;
+            } finally {
+                editorUi.editor.graph.model.endUpdate();
+            }
+        } else if (select.value == 'import') {
+            editorUi.editor.graph.model.beginUpdate();
+            try {
+                var doc = mxUtils.parseXml(data);
+                var model = new mxGraphModel();
+                var codec = new mxCodec(doc);
+                codec.decode(doc.documentElement, model);
+
+                var children = model.getChildren(model.getChildAt(model.getRoot(), 0));
+                editorUi.editor.graph.setSelectionCells(editorUi.editor.graph.importCells(children));
+
+                // LATER: Why is hideDialog between begin-/endUpdate faster?
+                editorUi.hideDialog();
+            } catch (e) {
+                error = e;
+            } finally {
+                editorUi.editor.graph.model.endUpdate();
+            }
+        }
+
+        if (error != null) {
+            mxUtils.alert(error.message);
+        }
+    });
+    okBtn.className = 'geBtn gePrimaryBtn';
+    div.appendChild(okBtn);
+
+    if (!editorUi.editor.cancelFirst) {
+        div.appendChild(cancelBtn);
+    }
+
+    this.container = div;
+};
+
+/**
  *
  */
 EditDiagramDialog.showNewWindowOption = true;

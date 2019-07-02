@@ -2563,12 +2563,17 @@ mxGraph.prototype.dblClick = function (evt, cell) {
     var mxe = new mxEventObject(mxEvent.DOUBLE_CLICK, 'event', evt, 'cell', cell);
     this.fireEvent(mxe);
 
+
     // Handles the event if it has not been consumed
     if (this.isEnabled() && !mxEvent.isConsumed(evt) && !mxe.isConsumed() &&
         cell != null && this.isCellEditable(cell) && !this.isEditing(cell)) {
+
         this.startEditingAtCell(cell, evt);
         mxEvent.consume(evt);
+
+
     }
+
 };
 
 /**

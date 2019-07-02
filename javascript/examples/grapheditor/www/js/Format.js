@@ -2687,7 +2687,10 @@ TextFormatPanel.prototype.addFont = function (container) {
 
 
     } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'automaton' ||
-        mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'initial') {
+        mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'initial' ||
+        mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'urgent' ||
+        mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'lineEllipse'
+    ) {
 
         var namePanel = this.createPanel();
         namePanel.style.paddingTop = '10px';
@@ -2909,11 +2912,11 @@ TextFormatPanel.prototype.addFont = function (container) {
                 cb.defaultChecked = false;
                 cb.checked = false;
             }
+            var state = graph.view.getState(cell);
+            var style = cell.getStyle();
+            var cells = graph.getSelectionCells();
             if (label == 'initial') {
                 cell.setInitial(cb.checked);
-                var state = graph.view.getState(cell);
-                var style = cell.getStyle();
-                var cells = graph.getSelectionCells();
                 if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'automaton') {
                     style = style + 'shape=initial;';
                     graph.setCellStyle(mxUtils.trim(style), cells);
@@ -2924,8 +2927,25 @@ TextFormatPanel.prototype.addFont = function (container) {
                 }
             } else if (label == 'urgent') {
                 cell.setUrgent(cb.checked);
+                if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'automaton') {
+                    style = style + 'shape=urgent;';
+                    graph.setCellStyle(mxUtils.trim(style), cells);
+                } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'urgent') {
+                    var newValue = removeStyleName(style, 'shape');
+                    newValue = newValue + 'shape=automaton;';
+                    graph.setCellStyle(mxUtils.trim(newValue), cells);
+                }
             } else {
                 cell.setCommitted(cb.checked);
+                if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'automaton') {
+                    style = style + 'shape=lineEllipse;perimeter=ellipsePerimeter';
+                    graph.setCellStyle(mxUtils.trim(style), cells);
+                } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'lineEllipse') {
+                    var newValue = removeStyleName(style, 'shape');
+                    newValue = removeStyleName(style, 'perimeter');
+                    newValue = newValue + 'shape=automaton;';
+                    graph.setCellStyle(mxUtils.trim(newValue), cells);
+                }
             }
             mxEvent.consume(evt);
         })
@@ -5126,7 +5146,6 @@ DiagramFormatPanel.prototype.addParameter = function (div) {
     input.style.marginTop = '4px';
     input.style.marginBottom = "6px";
     div.appendChild(input);
-
 
     input.value = graph.getModel().getDec();
     // alert(graph.getModel().getDec());

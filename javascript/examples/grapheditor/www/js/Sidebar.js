@@ -70,7 +70,7 @@ Sidebar.prototype.init = function () {
     var dir = STENCIL_PATH;
 
     this.addSearchPalette(true);
-    this.addTimedAutomataPalette(true);
+    this.addTimedAutomataPalette(dir);
     this.addGeneralPalette(true);
     this.addMiscPalette(false);
     this.addAdvancedPalette(false);
@@ -773,17 +773,20 @@ Sidebar.prototype.insertSearchHint = function (div, searchTerm, count, page, res
 /**
  * Adds the general palette to the sidebar.
  */
-Sidebar.prototype.addTimedAutomataPalette = function (expand) {
+Sidebar.prototype.addTimedAutomataPalette = function (dir) {
 
 
-    var fns = [
-        this.createVertexTemplateEntry('shape=automaton;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Automaton', null, null, 'automaton'),
-        this.createVertexTemplateEntry('shape=initial;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Initial', null, null, 'initial'),
-        this.createVertexTemplateEntry('swimlane;', 300, 300, 'Template', 'Template', null, null, 'Template'),
+    this.addStencilPalette('committed', 'Timed Automata', null,
+        ';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1',
+        null, null, null, null, [
+            this.createVertexTemplateEntry('swimlane;', 300, 300, 'Template', 'Template', null, null, 'Template'),
+            this.createVertexTemplateEntry('shape=automaton;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Automaton', null, null, 'automaton'),
+            // this.createVertexTemplateEntry('shape=urgent;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Automaton', null, null, 'urgent'),
+            // this.createVertexTemplateEntry('shape=initial;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Initial', null, null, 'initial'),
 
-    ];
+        ]);
 
-    this.addPaletteFunctions('general', 'Timed Automata', (expand != null) ? expand : true, fns);
+    //this.addPaletteFunctions('general', 'Timed Automata', (expand != null) ? expand : true, fns);
 };
 /**
  * Adds the general palette to the sidebar.
@@ -2782,13 +2785,60 @@ Sidebar.prototype.addClickHandler = function (elt, ds, cells) {
     var sb = this;
 
     ds.mouseDown = function (evt) {
-        oldMouseDown.apply(this, arguments);
-        first = new mxPoint(mxEvent.getClientX(evt), mxEvent.getClientY(evt));
 
-        if (this.dragElement != null) {
-            this.dragElement.style.display = 'none';
-            mxUtils.setOpacity(elt, 50);
+        //限制插入automaton前必须插入template作为画板
+        let flag = false;
+        let parent = graph.getDefaultParent();
+        //获取当前graph里已存在cell
+        let existCells = graph.getModel().getChildren(parent);
+        for (var i = 0; i < cells.length; i++) {
+            //所选择cell是否是automaton
+            if (cells[i].getStyle().indexOf('automaton') != -1) {
+                if (existCells != null) {
+                    for (var j = 0; j < existCells.length; j++) {
+                        //判断已存在的cell里是否包括template的cell
+                        if (existCells[j].getStyle().indexOf('swimlane') != -1) {
+                            flag = true;
+                        }
+                    }
+                    if (flag) {
+                        oldMouseDown.apply(this, arguments);
+                        first = new mxPoint(mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+
+                        if (this.dragElement != null) {
+                            this.dragElement.style.display = 'none';
+                            mxUtils.setOpacity(elt, 50);
+                        }
+                    } else {
+                        alert("Please insert template first");
+                    }
+                } else {
+                    alert("Please insert template first");
+                }
+            } else {
+
+                oldMouseDown.apply(this, arguments);
+                first = new mxPoint(mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+
+                if (this.dragElement != null) {
+                    this.dragElement.style.display = 'none';
+                    mxUtils.setOpacity(elt, 50);
+                }
+
+            }
         }
+        // if (flag) {
+        //     oldMouseDown.apply(this, arguments);
+        //     first = new mxPoint(mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+        //
+        //     if (this.dragElement != null) {
+        //         this.dragElement.style.display = 'none';
+        //         mxUtils.setOpacity(elt, 50);
+        //     }
+        // } else {
+        //     alert("Please insert template first")
+        // }
+
     };
 
     ds.mouseMove = function (evt) {
@@ -2799,10 +2849,13 @@ Sidebar.prototype.addClickHandler = function (elt, ds, cells) {
             mxUtils.setOpacity(elt, 100);
         }
 
+
         oldMouseMove.apply(this, arguments);
     };
 
     ds.mouseUp = function (evt) {
+
+
         if (!mxEvent.isPopupTrigger(evt) && this.currentGraph == null &&
             this.dragElement != null && this.dragElement.style.display == 'none') {
             sb.itemClicked(cells, ds, evt, elt);
@@ -2814,8 +2867,11 @@ Sidebar.prototype.addClickHandler = function (elt, ds, cells) {
 
         // Blocks tooltips on this element after single click
         sb.currentElt = elt;
+
+
     };
-};
+}
+;
 
 /**
  * Creates a drop handler for inserting the given cells.

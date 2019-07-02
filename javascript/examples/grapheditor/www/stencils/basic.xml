@@ -445,7 +445,7 @@
 <fillstroke/>
 </foreground>
 </shape>
-<shape name="No Symbol" h="100" w="100" aspect="variable" strokewidth="inherit">
+<shape name="Committed" h="100" w="100" aspect="variable" strokewidth="inherit">
 <connections>
 <constraint x="0.5" y="0" perimeter="0" name="N"/>
 <constraint x="0.5" y="1" perimeter="0" name="S"/>
@@ -468,6 +468,7 @@
 <move x="21.15" y="30.3"/>
 <arc rx="35" ry="35" x-axis-rotation="0" large-arc-flag="0" sweep-flag="0" x="69.7" y="79"/>
 <close/>
+
 </path>
 </background>
 <foreground>

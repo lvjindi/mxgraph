@@ -1,0 +1,33 @@
+<shapes>
+
+    <shape name="Committed" h="40" w="40" aspect="variable" strokewidth="inherit">
+        <connections>
+            <constraint x="0.5" y="0" perimeter="0" name="N"/>
+            <constraint x="0.5" y="1" perimeter="0" name="S"/>
+            <constraint x="0" y="0.5" perimeter="0" name="W"/>
+            <constraint x="1" y="0.5" perimeter="0" name="E"/>
+            <constraint x="0.145" y="0.145" perimeter="0" name="NW"/>
+            <constraint x="0.145" y="0.855" perimeter="0" name="SW"/>
+            <constraint x="0.855" y="0.145" perimeter="0" name="NE"/>
+            <constraint x="0.855" y="0.855" perimeter="0" name="SE"/>
+        </connections>
+        <background>
+            <path>
+                <move x="0" y="20"/>
+                <arc rx="14" ry="14" x-axis-rotation="0" large-arc-flag="0" sweep-flag="1" x="40" y="20"/>
+                <arc rx="14" ry="14" x-axis-rotation="0" large-arc-flag="0" sweep-flag="1" x="0" y="20"/>
+                <close/>
+                <move x="31.58" y="27.88"/>
+                <arc rx="14" ry="14" x-axis-rotation="0" large-arc-flag="0" sweep-flag="0" x="12.12" y="8.42"/>
+                <close/>
+                <move x="8.46" y="12.12"/>
+                <arc rx="14" ry="14" x-axis-rotation="0" large-arc-flag="0" sweep-flag="0" x="27.88" y="31.6"/>
+                <close/>
+            </path>
+        </background>
+        <foreground>
+            <fillstroke/>
+        </foreground>
+    </shape>
+
+</shapes>

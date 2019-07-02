@@ -332,3 +332,4 @@ urgent=Urgent
 committed=Committed
 parameter=Parameter
 declaration=Declaration
+vertexEdit=Vertex Edit

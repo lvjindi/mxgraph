@@ -1128,6 +1128,7 @@
             return new mxRectangle(rect.width / 6, 0, 0, 0);
         };
         AutomatonShape.prototype.paintBackground = function (c, x, y, w, h) {
+            //加labels
             if (this.state != null && this.state.cell.geometry != null && !this.state.cell.geometry.relative) {
                 c.setFontColor('#A52A2A');
                 c.text(x, y - h / 3, 0, 0, (this.state.cell.name != null) ? this.state.cell.name : '', 'center');
@@ -1170,6 +1171,7 @@
             return new mxRectangle(rect.width / 6, 0, 0, 0);
         };
         InitialShape.prototype.paintBackground = function (c, x, y, w, h) {
+            //加labels
             if (this.state != null && this.state.cell.geometry != null && !this.state.cell.geometry.relative) {
                 c.setFontColor('#A52A2A');
                 c.text(x, y - h / 3, 0, 0, (this.state.cell.name != null) ? this.state.cell.name : '', 'center');
@@ -1214,6 +1216,54 @@
         }
         // Replaces existing actor shape
         mxCellRenderer.registerShape('initial', InitialShape);
+
+        //Urgent Shape
+        function UrgentShape() {
+            mxEllipse.call(this);
+        };
+        mxUtils.extend(UrgentShape, mxEllipse);
+        UrgentShape.prototype.paintVertexShape = function (c, x, y, w, h) {
+            mxEllipse.prototype.paintVertexShape.apply(this, arguments);
+            var s2 = 0.145;
+            c.setShadow(false);
+            c.begin();
+            c.moveTo(x + w * s2, y + h * s2);
+            c.lineTo(x + w * (1 - s2), y + h * (1 - s2));
+            c.end();
+            c.stroke();
+
+            c.begin();
+            c.moveTo(x + w * (1 - s2), y + h * s2);
+            c.lineTo(x + w * s2, y + h * (1 - s2));
+            c.end();
+            //加labels
+            if (this.state != null && this.state.cell.geometry != null && !this.state.cell.geometry.relative) {
+                c.setFontColor('#A52A2A');
+                c.text(x, y - h / 3, 0, 0, (this.state.cell.name != null) ? this.state.cell.name : '', 'center');
+                c.setFontColor('#a0a0a0');
+                c.text(x - w / 3, y + h / 5, 0, 0, (this.state.cell.invariant != null) ? this.state.cell.invariant : '', 'center');
+                c.setFontColor('#a0a0a0');
+                c.text(x + w * 4 / 3, y + h / 5, 0, 0, (this.state.cell.rateOfExpoential != null) ? this.state.cell.rateOfExpoential : '', 'center');
+            }
+
+            c.stroke();
+        };
+
+        UrgentShape.prototype.isHtmlAllowed = function () {
+            var events = true;
+
+            if (this.style != null) {
+                events = mxUtils.getValue(this.style, mxConstants.STYLE_POINTER_EVENTS, '1') == '1';
+            }
+
+            return !this.isRounded && !this.glass && this.rotation == 0 && (events ||
+                (this.fill != null && this.fill != mxConstants.NONE));
+        };
+        var mxUrgentShapeIsHtmlAllowed = UrgentShape.prototype.isHtmlAllowed;
+        UrgentShape.prototype.isHtmlAllowed = function () {
+            return mxUrgentShapeIsHtmlAllowed.apply(this, arguments) && this.state == null;
+        };
+        mxCellRenderer.registerShape('urgent', UrgentShape);
 
         // Template Shape
         function TemplateShape() {
@@ -2396,8 +2446,33 @@
                 c.lineTo(x + w, y + h / 2);
             }
 
+            if (this.state != null && this.state.cell.geometry != null && !this.state.cell.geometry.relative) {
+                c.setFontColor('#A52A2A');
+                c.text(x, y - h / 3, 0, 0, (this.state.cell.name != null) ? this.state.cell.name : '', 'center');
+                c.setFontColor('#a0a0a0');
+                c.text(x - w / 3, y + h / 5, 0, 0, (this.state.cell.invariant != null) ? this.state.cell.invariant : '', 'center');
+                c.setFontColor('#a0a0a0');
+                c.text(x + w * 4 / 3, y + h / 5, 0, 0, (this.state.cell.rateOfExpoential != null) ? this.state.cell.rateOfExpoential : '', 'center');
+            }
+
             c.end();
             c.stroke();
+        };
+
+        LineEllipseShape.prototype.isHtmlAllowed = function () {
+            var events = true;
+
+            if (this.style != null) {
+                events = mxUtils.getValue(this.style, mxConstants.STYLE_POINTER_EVENTS, '1') == '1';
+            }
+
+            return !this.isRounded && !this.glass && this.rotation == 0 && (events ||
+                (this.fill != null && this.fill != mxConstants.NONE));
+        };
+
+        var mxLineEllipseShapeIsHtmlAllowed = InitialShape.prototype.isHtmlAllowed;
+        LineEllipseShape.prototype.isHtmlAllowed = function () {
+            return mxLineEllipseShapeIsHtmlAllowed.apply(this, arguments) && this.state == null;
         };
 
         mxCellRenderer.registerShape('lineEllipse', LineEllipseShape);
