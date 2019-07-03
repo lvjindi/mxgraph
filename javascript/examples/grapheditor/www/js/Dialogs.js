@@ -999,6 +999,87 @@ var EditTemplateDialog = function (editorUi) {
     this.container = div;
 };
 
+/**
+ * Constructs a new edit template(for timed automata) dialog.
+ */
+var EditDeclarationDialog = function (editorUi) {
+    var cell = editorUi.editor.graph.getSelectionCell();
+    var div = document.createElement('div');
+    var textareaDec = document.createElement('textarea');
+    textareaDec.setAttribute('wrap', 'off');
+    textareaDec.setAttribute('spellcheck', 'false');
+    textareaDec.setAttribute('autocorrect', 'off');
+    textareaDec.setAttribute('autocomplete', 'off');
+    textareaDec.setAttribute('autocapitalize', 'off');
+    textareaDec.style.overflow = 'auto';
+    textareaDec.style.resize = 'none';
+    textareaDec.style.width = '580px';
+    textareaDec.style.height = '320px';
+    textareaDec.style.marginBottom = '16px';
+    textareaDec.style.marginLeft = '4px';
+
+    var declarationTitle = createTitle(mxResources.get('declaration') + ':');
+    declarationTitle.style.paddingLeft = '5px';
+    declarationTitle.style.paddingTop = '5px';
+    declarationTitle.style.paddingBottom = '4px';
+
+    textareaDec.value = editorUi.editor.graph.getModel().getDec();
+
+    div.appendChild(declarationTitle);
+    div.appendChild(textareaDec);
+
+
+    this.init = function () {
+        textareaDec.focus();
+    };
+
+
+    var cancelBtn = mxUtils.button(mxResources.get('cancel'), function () {
+        editorUi.hideDialog();
+    });
+    cancelBtn.style.float = 'right';
+    cancelBtn.style.marginRight = '30px';
+    cancelBtn.className = 'geBtn';
+
+    if (editorUi.editor.cancelFirst) {
+        div.appendChild(cancelBtn);
+    }
+
+
+    var okBtn = mxUtils.button(mxResources.get('ok'), function () {
+        // Removes all illegal control characters before parsing
+        var dataDec = Graph.zapGremlins(mxUtils.trim(textareaDec.value));
+        var error = null;
+
+        editorUi.editor.graph.model.beginUpdate();
+        try {
+            editorUi.editor.graph.model.setDec(dataDec);
+
+            // LATER: Why is hideDialog between begin-/endUpdate faster?
+            editorUi.hideDialog();
+        } catch (e) {
+            error = e;
+        } finally {
+            editorUi.editor.graph.model.endUpdate();
+        }
+
+
+        if (error != null) {
+            mxUtils.alert(error.message);
+        }
+    });
+    okBtn.className = 'geBtn gePrimaryBtn';
+    okBtn.style.float = 'right';
+    okBtn.style.marginRight = '5px';
+    div.appendChild(okBtn);
+
+    if (!editorUi.editor.cancelFirst) {
+        div.appendChild(cancelBtn);
+    }
+
+    this.container = div;
+};
+
 function createCheckbox(cell, div, label, container, editorUi) {
     var graph = editorUi.editor.graph;
 

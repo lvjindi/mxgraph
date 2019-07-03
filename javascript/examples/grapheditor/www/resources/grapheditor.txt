@@ -334,3 +334,4 @@ parameter=Parameter
 declaration=Declaration
 locationEdit=Location Edit
 templateEdit=Template Edit
+declarationEdit=Declaration Edit

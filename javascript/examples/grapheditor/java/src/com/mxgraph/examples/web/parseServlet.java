@@ -19,6 +19,7 @@ public class parseServlet extends HttpServlet {
 
     }
 
+    //将mxgraph输出的xml转化成uppal的xml形式
     public static void parseXml() throws Exception {
         SAXReader reader = new SAXReader();
         File file = new File("E:\\LabProject\\mxgraph\\Drawing1.xml");
