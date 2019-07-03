@@ -71,7 +71,7 @@ Sidebar.prototype.init = function () {
 
     this.addSearchPalette(true);
     this.addTimedAutomataPalette(dir);
-    this.addGeneralPalette(true);
+    this.addGeneralPalette(false);
     this.addMiscPalette(false);
     this.addAdvancedPalette(false);
     this.addBasicPalette(dir);
