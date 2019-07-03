@@ -5135,26 +5135,14 @@ DiagramFormatPanel.prototype.addPaperSize = function (div) {
  * Adds the label menu items to the given menu and parent.
  */
 DiagramFormatPanel.prototype.addParameter = function (div) {
-    var ui = this.editorUi;
-    var editor = ui.editor;
-    var graph = editor.graph;
 
-    div.appendChild(this.createTitle(mxResources.get('declaration')));
-
-    var input = document.createElement('input');
-    input.style.textAlign = 'left';
-    input.style.marginTop = '4px';
-    input.style.marginBottom = "6px";
-    div.appendChild(input);
-
-    input.value = graph.getModel().getDec();
-    // alert(graph.getModel().getDec());
-    mxEvent.addListener(input, 'change', function (evt) {
-        graph.getModel().setDec(input.value);
-        mxEvent.consume(evt);
-    })
-
-
+    var btn = mxUtils.button(mxResources.get('editDeclaration'), mxUtils.bind(this, function (evt) {
+        this.editorUi.actions.get('editDeclaration').funct();
+    }));
+    btn.setAttribute('title', mxResources.get('editDeclaration'));
+    btn.style.width = '202px';
+    btn.style.marginBottom = '2px';
+    div.appendChild(btn);
     return div;
 };
 

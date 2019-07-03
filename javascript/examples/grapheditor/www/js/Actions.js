@@ -78,7 +78,7 @@ Actions.prototype.init = function () {
         ui.showDialog(dlg.container, 620, 420, true, false);
         dlg.init();
     });
-    this.addAction('declarationEdit...', function () {
+    this.addAction('editDeclaration...', function () {
         var dlg = new EditDeclarationDialog(ui);
         ui.showDialog(dlg.container, 620, 420, true, false);
         dlg.init();

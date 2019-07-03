@@ -851,7 +851,7 @@ Menus.prototype.createPopupMenu = function (menu, cell, evt) {
     cell = graph.getSelectionCell();
     var state = graph.view.getState(cell);
     if (graph.isSelectionEmpty()) {
-        this.addMenuItems(menu, ['declarationEdit', 'undo', 'redo', 'pasteHere'], null, evt);
+        this.addMenuItems(menu, ['editDeclaration', 'undo', 'redo', 'pasteHere'], null, evt);
     } else {
         if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'location') {
             this.addMenuItems(menu, ['locationEdit', 'delete', '-', 'cut', 'copy', '-', 'duplicate'], null, evt);
