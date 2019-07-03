@@ -776,9 +776,19 @@ var EditDiagramDialog = function (editorUi) {
 
     this.container = div;
 };
+var createTitle = function (title) {
+    var div = document.createElement('div');
+    div.style.padding = '0px 0px 6px 0px';
+    div.style.whiteSpace = 'nowrap';
+    div.style.overflow = 'hidden';
+    div.style.width = '200px';
+    div.style.fontWeight = 'bold';
+    mxUtils.write(div, title);
 
+    return div;
+};
 /**
- * Constructs a new edit vertex(for timed automata) dialog.
+ * Constructs a new edit location(for timed automata) dialog.
  */
 var EditVertexDialog = function (editorUi) {
     var cell = editorUi.editor.graph.getSelectionCell();
@@ -792,24 +802,25 @@ var EditVertexDialog = function (editorUi) {
     textareaName.setAttribute('autocapitalize', 'off');
     textareaName.style.overflow = 'auto';
     textareaName.style.resize = 'none';
-    textareaName.style.width = '550px';
-    textareaName.style.height = '100px';
+    textareaName.style.width = '580px';
+    textareaName.style.height = '60px';
+    textareaName.style.marginLeft = '4px';
     textareaName.style.marginBottom = '16px';
 
-    var labelName = document.createElement('label');
-    labelName.style.fontSize = '14px';
-    labelName.style.cssFloat = 'left';
-    labelName.style.marginRight = '3px';
-    labelName.style.marginBottom = '5px';
-    //labelName.style.marginTop = '10px';
-    var labelInv = labelName.cloneNode();
-    var labelRate = labelName.cloneNode();
+    var nameTitle = createTitle(mxResources.get('name') + ':');
+    nameTitle.style.paddingLeft = '5px';
+    nameTitle.style.paddingTop = '5px';
+    nameTitle.style.paddingBottom = '4px';
 
-    var br = document.createElement('br');
-    mxUtils.write(labelName, mxResources.get('name') + ':');
-    mxUtils.write(labelInv, mxResources.get('invariant') + ':');
-    mxUtils.write(labelRate, mxResources.get('rateOfExponential') + ':');
+    var invariantTitle = createTitle(mxResources.get('invariant') + ':');
+    invariantTitle.style.paddingLeft = '5px';
+    invariantTitle.style.paddingTop = '5px';
+    invariantTitle.style.paddingBottom = '4px';
 
+    var rateTitle = createTitle(mxResources.get('rateOfExponential') + ':');
+    rateTitle.style.paddingLeft = '5px';
+    rateTitle.style.paddingTop = '5px';
+    rateTitle.style.paddingBottom = '4px';
 
     var textareaInv = textareaName.cloneNode();
     var textareaRate = textareaName.cloneNode();
@@ -819,128 +830,67 @@ var EditVertexDialog = function (editorUi) {
     textareaInv.value = cell.getInvariant();
     textareaRate.value = cell.getRateOfExponential();
 
-    div.appendChild(labelName);
+    div.appendChild(nameTitle);
     div.appendChild(textareaName);
-    div.appendChild(labelInv);
+    div.appendChild(invariantTitle);
     div.appendChild(textareaInv);
-    div.appendChild(labelRate);
+    div.appendChild(rateTitle);
     div.appendChild(textareaRate);
 
     this.init = function () {
         textareaName.focus();
     };
 
-    // Enables dropping files
-    // if (Graph.fileSupport) {
-    //     function handleDrop(evt) {
-    //         evt.stopPropagation();
-    //         evt.preventDefault();
-    //
-    //         if (evt.dataTransfer.files.length > 0) {
-    //             var file = evt.dataTransfer.files[0];
-    //             var reader = new FileReader();
-    //
-    //             reader.onload = function (e) {
-    //                 textareaName.value = e.target.result;
-    //             };
-    //
-    //             reader.readAsText(file);
-    //         } else {
-    //             textareaName.value = editorUi.extractGraphModelFromEvent(evt);
-    //         }
-    //     };
-    //
-    //     function handleDragOver(evt) {
-    //         evt.stopPropagation();
-    //         evt.preventDefault();
-    //     };
-    //
-    //     // Setup the dnd listeners.
-    //     textareaName.addEventListener('dragover', handleDragOver, false);
-    //     textareaName.addEventListener('drop', handleDrop, false);
-    // }
+    var checkDiv = document.createElement('div');
+    checkDiv.style.marginTop = '10px';
+    checkDiv.style.marginBottom = '20px';
+
+    createCheckbox(cell, checkDiv, 'initial', div, editorUi);
+    createCheckbox(cell, checkDiv, 'urgent', div, editorUi);
+    createCheckbox(cell, checkDiv, 'committed', div, editorUi);
+
 
     var cancelBtn = mxUtils.button(mxResources.get('cancel'), function () {
         editorUi.hideDialog();
     });
+    cancelBtn.style.float = 'right';
+    cancelBtn.style.marginRight = '30px';
     cancelBtn.className = 'geBtn';
 
     if (editorUi.editor.cancelFirst) {
         div.appendChild(cancelBtn);
     }
 
-    // var select = document.createElement('select');
-    // select.style.width = '180px';
-    // select.className = 'geBtn';
-    //
-    // if (editorUi.editor.graph.isEnabled()) {
-    //     var replaceOption = document.createElement('option');
-    //     replaceOption.setAttribute('value', 'replace');
-    //     mxUtils.write(replaceOption, mxResources.get('replaceExistingDrawing'));
-    //     select.appendChild(replaceOption);
-    // }
-    //
-    // var newOption = document.createElement('option');
-    // newOption.setAttribute('value', 'new');
-    // mxUtils.write(newOption, mxResources.get('openInNewWindow'));
-    //
-    // if (EditDiagramDialog.showNewWindowOption) {
-    //     select.appendChild(newOption);
-    // }
-    //
-    // if (editorUi.editor.graph.isEnabled()) {
-    //     var importOption = document.createElement('option');
-    //     importOption.setAttribute('value', 'import');
-    //     mxUtils.write(importOption, mxResources.get('addToExistingDrawing'));
-    //     select.appendChild(importOption);
-    // }
-    //
-    // div.appendChild(select);
 
     var okBtn = mxUtils.button(mxResources.get('ok'), function () {
         // Removes all illegal control characters before parsing
-        var data = Graph.zapGremlins(mxUtils.trim(textarea.value));
+        var dataName = Graph.zapGremlins(mxUtils.trim(textareaName.value));
+        var dataInv = Graph.zapGremlins(mxUtils.trim(textareaInv.value));
+        var dataRate = Graph.zapGremlins(mxUtils.trim(textareaRate.value));
         var error = null;
 
-        if (select.value == 'new') {
+        editorUi.editor.graph.model.beginUpdate();
+        try {
+            editorUi.editor.graph.model.setName(cell, dataName);
+            editorUi.editor.graph.model.setInvariant(cell, dataInv);
+            editorUi.editor.graph.model.setRateOfExponential(cell, dataRate);
+
+            // LATER: Why is hideDialog between begin-/endUpdate faster?
             editorUi.hideDialog();
-            editorUi.editor.editAsNew(data);
-        } else if (select.value == 'replace') {
-            editorUi.editor.graph.model.beginUpdate();
-            try {
-                editorUi.editor.setGraphXml(mxUtils.parseXml(data).documentElement);
-                // LATER: Why is hideDialog between begin-/endUpdate faster?
-                editorUi.hideDialog();
-            } catch (e) {
-                error = e;
-            } finally {
-                editorUi.editor.graph.model.endUpdate();
-            }
-        } else if (select.value == 'import') {
-            editorUi.editor.graph.model.beginUpdate();
-            try {
-                var doc = mxUtils.parseXml(data);
-                var model = new mxGraphModel();
-                var codec = new mxCodec(doc);
-                codec.decode(doc.documentElement, model);
-
-                var children = model.getChildren(model.getChildAt(model.getRoot(), 0));
-                editorUi.editor.graph.setSelectionCells(editorUi.editor.graph.importCells(children));
-
-                // LATER: Why is hideDialog between begin-/endUpdate faster?
-                editorUi.hideDialog();
-            } catch (e) {
-                error = e;
-            } finally {
-                editorUi.editor.graph.model.endUpdate();
-            }
+        } catch (e) {
+            error = e;
+        } finally {
+            editorUi.editor.graph.model.endUpdate();
         }
+
 
         if (error != null) {
             mxUtils.alert(error.message);
         }
     });
     okBtn.className = 'geBtn gePrimaryBtn';
+    okBtn.style.float = 'right';
+    okBtn.style.marginRight = '5px';
     div.appendChild(okBtn);
 
     if (!editorUi.editor.cancelFirst) {
@@ -949,6 +899,205 @@ var EditVertexDialog = function (editorUi) {
 
     this.container = div;
 };
+
+/**
+ * Constructs a new edit template(for timed automata) dialog.
+ */
+var EditTemplateDialog = function (editorUi) {
+    var cell = editorUi.editor.graph.getSelectionCell();
+    var div = document.createElement('div');
+    var textareaPara = document.createElement('textarea');
+    textareaPara.setAttribute('wrap', 'off');
+    textareaPara.setAttribute('spellcheck', 'false');
+    textareaPara.setAttribute('autocorrect', 'off');
+    textareaPara.setAttribute('autocomplete', 'off');
+    textareaPara.setAttribute('autocapitalize', 'off');
+    textareaPara.style.overflow = 'auto';
+    textareaPara.style.resize = 'none';
+    textareaPara.style.width = '580px';
+    textareaPara.style.height = '130px';
+    textareaPara.style.marginBottom = '16px';
+    textareaPara.style.marginLeft = '4px';
+
+    var templateNameDiv = document.createElement('div');
+    templateNameDiv.style.textAlign = 'center';
+    templateNameDiv.style.fontWeight = 'bold';
+    mxUtils.write(templateNameDiv, cell.getValue());
+
+    var paraTitle = createTitle(mxResources.get('parameter') + ':');
+    paraTitle.style.paddingLeft = '5px';
+    paraTitle.style.paddingTop = '5px';
+    paraTitle.style.paddingBottom = '4px';
+
+    var declarationTitle = createTitle(mxResources.get('declaration') + ':');
+    declarationTitle.style.paddingLeft = '5px';
+    declarationTitle.style.paddingTop = '5px';
+    declarationTitle.style.paddingBottom = '4px';
+
+    var textareaDec = textareaPara.cloneNode();
+
+    textareaPara.value = cell.getParameter();
+    textareaDec.value = cell.getDeclaration();
+
+    div.appendChild(templateNameDiv)
+    div.appendChild(paraTitle);
+    div.appendChild(textareaPara);
+    div.appendChild(declarationTitle);
+    div.appendChild(textareaDec);
+
+
+    this.init = function () {
+        textareaPara.focus();
+    };
+
+
+    var cancelBtn = mxUtils.button(mxResources.get('cancel'), function () {
+        editorUi.hideDialog();
+    });
+    cancelBtn.style.float = 'right';
+    cancelBtn.style.marginRight = '30px';
+    cancelBtn.className = 'geBtn';
+
+    if (editorUi.editor.cancelFirst) {
+        div.appendChild(cancelBtn);
+    }
+
+
+    var okBtn = mxUtils.button(mxResources.get('ok'), function () {
+        // Removes all illegal control characters before parsing
+        var dataPara = Graph.zapGremlins(mxUtils.trim(textareaPara.value));
+        var dataDec = Graph.zapGremlins(mxUtils.trim(textareaDec.value));
+        var error = null;
+
+        editorUi.editor.graph.model.beginUpdate();
+        try {
+            editorUi.editor.graph.model.setParameter(cell, dataPara);
+            editorUi.editor.graph.model.setDeclaration(cell, dataDec);
+
+            // LATER: Why is hideDialog between begin-/endUpdate faster?
+            editorUi.hideDialog();
+        } catch (e) {
+            error = e;
+        } finally {
+            editorUi.editor.graph.model.endUpdate();
+        }
+
+
+        if (error != null) {
+            mxUtils.alert(error.message);
+        }
+    });
+    okBtn.className = 'geBtn gePrimaryBtn';
+    okBtn.style.float = 'right';
+    okBtn.style.marginRight = '5px';
+    div.appendChild(okBtn);
+
+    if (!editorUi.editor.cancelFirst) {
+        div.appendChild(cancelBtn);
+    }
+
+    this.container = div;
+};
+
+function createCheckbox(cell, div, label, container, editorUi) {
+    var graph = editorUi.editor.graph;
+
+    var checkbox = document.createElement('span');
+    checkbox.style.marginBottom = '5px';
+    checkbox.style.marginRight = '50px';
+    checkbox.style.marginLeft = '4px';
+    var cb = document.createElement('input');
+    cb.setAttribute('type', 'checkbox');
+    cb.style.margin = '0px 6px 0px 0px';
+    if (label == 'initial') {
+        if (cell.getInitial() != 0) {
+            cb.checked = true;
+        } else {
+            cb.checked = false;
+        }
+    } else if (label == 'urgent') {
+        if (cell.getUrgent() != 0) {
+            cb.checked = true;
+        } else {
+            cb.checked = false;
+        }
+    } else {
+        if (cell.getCommitted() != 0) {
+            cb.checked = true;
+        } else {
+            cb.checked = false;
+        }
+    }
+    checkbox.appendChild(cb);
+
+    //var br = document.createElement('br');
+    var initialSpan = document.createElement('span');
+    var value = mxResources.get(label);
+    initialSpan.style.fontWeight = 'bold';
+    mxUtils.write(initialSpan, value);
+    checkbox.appendChild(initialSpan);
+    div.appendChild(checkbox);
+    container.appendChild(div);
+    mxEvent.addListener(cb, 'change', function (evt) {
+        if (cb.checked) {
+            cb.setAttribute('checked', 'checked');
+            cb.defaultChecked = true;
+            cb.checked = true;
+        } else {
+            cb.removeAttribute('checked');
+            cb.defaultChecked = false;
+            cb.checked = false;
+        }
+        var state = graph.view.getState(cell);
+        var style = cell.getStyle();
+        var cells = graph.getSelectionCells();
+        if (label == 'initial') {
+            cell.setInitial(cb.checked);
+            if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'location') {
+                style = style + 'shape=initial;';
+                graph.setCellStyle(mxUtils.trim(style), cells);
+            } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'initial') {
+                var newValue = removeStyleName(style, 'shape');
+                newValue = newValue + 'shape=location;';
+                graph.setCellStyle(mxUtils.trim(newValue), cells);
+            }
+        } else if (label == 'urgent') {
+            cell.setUrgent(cb.checked);
+            if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'location') {
+                style = style + 'shape=urgent;';
+                graph.setCellStyle(mxUtils.trim(style), cells);
+            } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'urgent') {
+                var newValue = removeStyleName(style, 'shape');
+                newValue = newValue + 'shape=location;';
+                graph.setCellStyle(mxUtils.trim(newValue), cells);
+            }
+        } else {
+            cell.setCommitted(cb.checked);
+            if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'location') {
+                style = style + 'shape=lineEllipse;perimeter=ellipsePerimeter';
+                graph.setCellStyle(mxUtils.trim(style), cells);
+            } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'lineEllipse') {
+                var newValue = removeStyleName(style, 'shape');
+                newValue = removeStyleName(style, 'perimeter');
+                newValue = newValue + 'shape=location;';
+                graph.setCellStyle(mxUtils.trim(newValue), cells);
+            }
+        }
+        mxEvent.consume(evt);
+    })
+}
+
+//用来移除style里某个属性的
+function removeStyleName(style, name) {
+    style = style.split(';');
+    var newValue = '';
+    for (i = 0; i < style.length; i++) {
+        if (!style[i].startsWith(name)) {
+            newValue = newValue + style[i] + ';';
+        }
+    }
+    return newValue;
+}
 
 /**
  *

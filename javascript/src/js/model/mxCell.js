@@ -140,17 +140,17 @@ mxCell.prototype.sync = null;
 mxCell.prototype.update = null;
 
 /**
- * Variable: name for automaton
+ * Variable: name for location
  *
  */
 mxCell.prototype.name = null;
 /**
- * Variable: invariant for automaton
+ * Variable: invariant for location
  *
  */
 mxCell.prototype.invariant = null;
 /**
- * Variable: Rate of Exponential for automaton
+ * Variable: Rate of Exponential for location
  *
  */
 mxCell.prototype.rateOfExpoential = null;

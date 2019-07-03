@@ -2686,7 +2686,7 @@ TextFormatPanel.prototype.addFont = function (container) {
         createExtraInput(updateTitle, 'update', container, guardPanel);
 
 
-    } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'automaton' ||
+    } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'location' ||
         mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'initial' ||
         mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'urgent' ||
         mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'lineEllipse'
@@ -2917,33 +2917,33 @@ TextFormatPanel.prototype.addFont = function (container) {
             var cells = graph.getSelectionCells();
             if (label == 'initial') {
                 cell.setInitial(cb.checked);
-                if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'automaton') {
+                if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'location') {
                     style = style + 'shape=initial;';
                     graph.setCellStyle(mxUtils.trim(style), cells);
                 } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'initial') {
                     var newValue = removeStyleName(style, 'shape');
-                    newValue = newValue + 'shape=automaton;';
+                    newValue = newValue + 'shape=location;';
                     graph.setCellStyle(mxUtils.trim(newValue), cells);
                 }
             } else if (label == 'urgent') {
                 cell.setUrgent(cb.checked);
-                if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'automaton') {
+                if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'location') {
                     style = style + 'shape=urgent;';
                     graph.setCellStyle(mxUtils.trim(style), cells);
                 } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'urgent') {
                     var newValue = removeStyleName(style, 'shape');
-                    newValue = newValue + 'shape=automaton;';
+                    newValue = newValue + 'shape=location;';
                     graph.setCellStyle(mxUtils.trim(newValue), cells);
                 }
             } else {
                 cell.setCommitted(cb.checked);
-                if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'automaton') {
+                if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'location') {
                     style = style + 'shape=lineEllipse;perimeter=ellipsePerimeter';
                     graph.setCellStyle(mxUtils.trim(style), cells);
                 } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'lineEllipse') {
                     var newValue = removeStyleName(style, 'shape');
                     newValue = removeStyleName(style, 'perimeter');
-                    newValue = newValue + 'shape=automaton;';
+                    newValue = newValue + 'shape=location;';
                     graph.setCellStyle(mxUtils.trim(newValue), cells);
                 }
             }

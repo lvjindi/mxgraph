@@ -849,12 +849,14 @@ Menus.prototype.createPopupMenu = function (menu, cell, evt) {
     var graph = this.editorUi.editor.graph;
     menu.smartSeparators = true;
     cell = graph.getSelectionCell();
-
+    var state = graph.view.getState(cell);
     if (graph.isSelectionEmpty()) {
         this.addMenuItems(menu, ['undo', 'redo', 'pasteHere'], null, evt);
     } else {
-        if (cell.getStyle().indexOf('automaton') != -1) {
-            this.addMenuItems(menu, ['vertexEdit', 'delete', '-', 'cut', 'copy', '-', 'duplicate'], null, evt);
+        if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'location') {
+            this.addMenuItems(menu, ['locationEdit', 'delete', '-', 'cut', 'copy', '-', 'duplicate'], null, evt);
+        } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'swimlane') {
+            this.addMenuItems(menu, ['templateEdit', 'delete', '-', 'cut', 'copy', '-', 'duplicate'], null, evt);
         } else {
             this.addMenuItems(menu, ['delete', '-', 'cut', 'copy', '-', 'duplicate'], null, evt);
         }

@@ -780,8 +780,8 @@ Sidebar.prototype.addTimedAutomataPalette = function (dir) {
         ';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1',
         null, null, null, null, [
             this.createVertexTemplateEntry('swimlane;', 300, 300, 'Template', 'Template', null, null, 'Template'),
-            this.createVertexTemplateEntry('shape=automaton;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Automaton', null, null, 'automaton'),
-            // this.createVertexTemplateEntry('shape=urgent;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Automaton', null, null, 'urgent'),
+            this.createVertexTemplateEntry('shape=location;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Location', null, null, 'location'),
+            // this.createVertexTemplateEntry('shape=urgent;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Location', null, null, 'urgent'),
             // this.createVertexTemplateEntry('shape=initial;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Initial', null, null, 'initial'),
 
         ]);
@@ -2786,14 +2786,14 @@ Sidebar.prototype.addClickHandler = function (elt, ds, cells) {
 
     ds.mouseDown = function (evt) {
 
-        //限制插入automaton前必须插入template作为画板
+        //限制插入location前必须插入template作为画板
         let flag = false;
         let parent = graph.getDefaultParent();
         //获取当前graph里已存在cell
         let existCells = graph.getModel().getChildren(parent);
         for (var i = 0; i < cells.length; i++) {
-            //所选择cell是否是automaton
-            if (cells[i].getStyle().indexOf('automaton') != -1) {
+            //所选择cell是否是location
+            if (cells[i].getStyle().indexOf('location') != -1) {
                 if (existCells != null) {
                     for (var j = 0; j < existCells.length; j++) {
                         //判断已存在的cell里是否包括template的cell

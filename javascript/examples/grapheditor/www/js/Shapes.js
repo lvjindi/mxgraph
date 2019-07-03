@@ -1118,16 +1118,16 @@
         // Replaces existing actor shape
         mxCellRenderer.registerShape('umlBoundary', UmlBoundaryShape);
         //------------------------------------------------------------------------------------------------
-        // Automaton Shape
-        function AutomatonShape() {
+        // Location Shape
+        function LocationShape() {
             mxShape.call(this);
         };
-        mxUtils.extend(AutomatonShape, mxShape);
+        mxUtils.extend(LocationShape, mxShape);
 
-        AutomatonShape.prototype.getLabelMargins = function (rect) {
+        LocationShape.prototype.getLabelMargins = function (rect) {
             return new mxRectangle(rect.width / 6, 0, 0, 0);
         };
-        AutomatonShape.prototype.paintBackground = function (c, x, y, w, h) {
+        LocationShape.prototype.paintBackground = function (c, x, y, w, h) {
             //加labels
             if (this.state != null && this.state.cell.geometry != null && !this.state.cell.geometry.relative) {
                 c.setFontColor('#A52A2A');
@@ -1140,7 +1140,7 @@
             c.ellipse(x, y, w, h);
             c.fillAndStroke();
         };
-        AutomatonShape.prototype.isHtmlAllowed = function () {
+        LocationShape.prototype.isHtmlAllowed = function () {
             var events = true;
 
             if (this.style != null) {
@@ -1151,15 +1151,15 @@
                 (this.fill != null && this.fill != mxConstants.NONE));
         };
 
-        var mxAutomatonShapeIsHtmlAllowed = AutomatonShape.prototype.isHtmlAllowed;
-        AutomatonShape.prototype.isHtmlAllowed = function () {
-            return mxAutomatonShapeIsHtmlAllowed.apply(this, arguments) && this.state == null;
+        var mxLocationShapeIsHtmlAllowed = LocationShape.prototype.isHtmlAllowed;
+        LocationShape.prototype.isHtmlAllowed = function () {
+            return mxLocationShapeIsHtmlAllowed.apply(this, arguments) && this.state == null;
         };
-        // AutomatonShape.prototype.paintForeground = function (c, x, y, w, h) {
+        // LocationShape.prototype.paintForeground = function (c, x, y, w, h) {
         //
         // }
         // Replaces existing actor shape
-        mxCellRenderer.registerShape('automaton', AutomatonShape);
+        mxCellRenderer.registerShape('location', LocationShape);
 
         // Initial Shape
         function InitialShape() {
@@ -1265,53 +1265,6 @@
         };
         mxCellRenderer.registerShape('urgent', UrgentShape);
 
-        // Template Shape
-        function TemplateShape() {
-            mxShape.call(this);
-        };
-        mxUtils.extend(TemplateShape, mxShape);
-
-        TemplateShape.prototype.getLabelMargins = function (rect) {
-            return new mxRectangle(rect.width / 6, 0, 0, 0);
-        };
-        TemplateShape.prototype.paintBackground = function (c, x, y, w, h) {
-
-            c.rect(x, y, w, h);
-            c.fillAndStroke();
-        };
-        TemplateShape.prototype.isHtmlAllowed = function () {
-            var events = true;
-
-            if (this.style != null) {
-                events = mxUtils.getValue(this.style, mxConstants.STYLE_POINTER_EVENTS, '1') == '1';
-            }
-
-            return !this.isRounded && !this.glass && this.rotation == 0 && (events ||
-                (this.fill != null && this.fill != mxConstants.NONE));
-        };
-
-        var mxInitialShapeIsHtmlAllowed = InitialShape.prototype.isHtmlAllowed;
-        TemplateShape.prototype.isHtmlAllowed = function () {
-            return mxInitialShapeIsHtmlAllowed.apply(this, arguments) && this.state == null;
-        };
-        // TemplateShape.prototype.paintForeground = function (c, x, y, w, h) {
-        //     if (!this.outline) {
-        //         var margin = mxUtils.getValue(this.style, mxConstants.STYLE_MARGIN, Math.min(3 + this.strokewidth, Math.min(w / 5, h / 5)));
-        //         x += margin;
-        //         y += margin;
-        //         w -= 2 * margin;
-        //         h -= 2 * margin;
-        //
-        //         // FIXME: Rounding issues in IE8 standards mode (not in 1.x)
-        //         if (w > 0 && h > 0) {
-        //             c.ellipse(x, y, w, h);
-        //         }
-        //
-        //         c.stroke();
-        //     }
-        // }
-        // Replaces existing actor shape
-        mxCellRenderer.registerShape('template', TemplateShape);
 //---------------------------------------------------------------------------------------------------------------------
 
 
@@ -3652,7 +3605,7 @@
             return (constr);
         };
 
-        AutomatonShape.prototype.getConstraints = function (style, w, h) {
+        LocationShape.prototype.getConstraints = function (style, w, h) {
             var constr = [];
             var s = Math.max(0, Math.min(w, Math.min(h, parseFloat(mxUtils.getValue(this.style, 'size', this.size)))));
 
