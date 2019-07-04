@@ -1133,7 +1133,7 @@
                 c.setFontColor('#A52A2A');
                 c.text(x, y - h / 3, 0, 0, (this.state.cell.name != null) ? this.state.cell.name : '', 'center');
                 c.setFontColor('#a0a0a0');
-                c.text(x - w / 3, y + h / 5, 0, 0, (this.state.cell.invariant != null) ? this.state.cell.invariant : '', 'center');
+                c.text(x - w*2/3 , y + h / 5, 0, 0, (this.state.cell.invariant != null) ? this.state.cell.invariant : '', 'center');
                 c.setFontColor('#a0a0a0');
                 c.text(x + w * 4 / 3, y + h / 5, 0, 0, (this.state.cell.rateOfExpoential != null) ? this.state.cell.rateOfExpoential : '', 'center');
             }
@@ -1176,7 +1176,7 @@
                 c.setFontColor('#A52A2A');
                 c.text(x, y - h / 3, 0, 0, (this.state.cell.name != null) ? this.state.cell.name : '', 'center');
                 c.setFontColor('#a0a0a0');
-                c.text(x - w / 3, y + h / 5, 0, 0, (this.state.cell.invariant != null) ? this.state.cell.invariant : '', 'center');
+                c.text(x - w*2/3 , y + h / 5, 0, 0, (this.state.cell.invariant != null) ? this.state.cell.invariant : '', 'center');
                 c.setFontColor('#a0a0a0');
                 c.text(x + w * 4 / 3, y + h / 5, 0, 0, (this.state.cell.rateOfExpoential != null) ? this.state.cell.rateOfExpoential : '', 'center');
             }
@@ -1241,7 +1241,7 @@
                 c.setFontColor('#A52A2A');
                 c.text(x, y - h / 3, 0, 0, (this.state.cell.name != null) ? this.state.cell.name : '', 'center');
                 c.setFontColor('#a0a0a0');
-                c.text(x - w / 3, y + h / 5, 0, 0, (this.state.cell.invariant != null) ? this.state.cell.invariant : '', 'center');
+                c.text(x - w*2/3 , y + h / 5, 0, 0, (this.state.cell.invariant != null) ? this.state.cell.invariant : '', 'center');
                 c.setFontColor('#a0a0a0');
                 c.text(x + w * 4 / 3, y + h / 5, 0, 0, (this.state.cell.rateOfExpoential != null) ? this.state.cell.rateOfExpoential : '', 'center');
             }

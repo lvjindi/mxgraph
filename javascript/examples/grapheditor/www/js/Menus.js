@@ -853,7 +853,11 @@ Menus.prototype.createPopupMenu = function (menu, cell, evt) {
     if (graph.isSelectionEmpty()) {
         this.addMenuItems(menu, ['undo', 'redo', 'pasteHere'], null, evt);
     } else {
-        if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'location') {
+        if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'location' ||
+            mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'initial' ||
+            mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'urgent' ||
+            mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'lineEllipse'
+        ) {
             this.addMenuItems(menu, ['locationEdit', 'delete', '-', 'cut', 'copy', '-', 'duplicate'], null, evt);
         } else if (mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'swimlane') {
             this.addMenuItems(menu, ['templateEdit', 'delete', '-', 'cut', 'copy', '-', 'duplicate'], null, evt);

@@ -794,18 +794,26 @@ var EditVertexDialog = function (editorUi) {
     var cell = editorUi.editor.graph.getSelectionCell();
     var div = document.createElement('div');
     // div.style.textAlign = 'left';
-    var textareaName = document.createElement('textarea');
-    textareaName.setAttribute('wrap', 'off');
-    textareaName.setAttribute('spellcheck', 'false');
-    textareaName.setAttribute('autocorrect', 'off');
-    textareaName.setAttribute('autocomplete', 'off');
-    textareaName.setAttribute('autocapitalize', 'off');
+
+    var textareaName = document.createElement('input');
     textareaName.style.overflow = 'auto';
     textareaName.style.resize = 'none';
     textareaName.style.width = '580px';
-    textareaName.style.height = '60px';
     textareaName.style.marginLeft = '4px';
     textareaName.style.marginBottom = '16px';
+
+    var textareaInv = document.createElement('textarea');
+    textareaInv.setAttribute('wrap', 'off');
+    textareaInv.setAttribute('spellcheck', 'false');
+    textareaInv.setAttribute('autocorrect', 'off');
+    textareaInv.setAttribute('autocomplete', 'off');
+    textareaInv.setAttribute('autocapitalize', 'off');
+    textareaInv.style.overflow = 'auto';
+    textareaInv.style.resize = 'none';
+    textareaInv.style.width = '580px';
+    textareaInv.style.height = '120px';
+    textareaInv.style.marginLeft = '4px';
+    textareaInv.style.marginBottom = '16px';
 
     var nameTitle = createTitle(mxResources.get('name') + ':');
     nameTitle.style.paddingLeft = '5px';
@@ -822,8 +830,8 @@ var EditVertexDialog = function (editorUi) {
     rateTitle.style.paddingTop = '5px';
     rateTitle.style.paddingBottom = '4px';
 
-    var textareaInv = textareaName.cloneNode();
-    var textareaRate = textareaName.cloneNode();
+
+    var textareaRate = textareaInv.cloneNode();
 
 
     textareaName.value = cell.getName();
@@ -906,6 +914,14 @@ var EditVertexDialog = function (editorUi) {
 var EditTemplateDialog = function (editorUi) {
     var cell = editorUi.editor.graph.getSelectionCell();
     var div = document.createElement('div');
+
+    var textareaName = document.createElement('input');
+    textareaName.style.overflow = 'auto';
+    textareaName.style.resize = 'none';
+    textareaName.style.width = '580px';
+    textareaName.style.marginBottom = '16px';
+    textareaName.style.marginLeft = '4px';
+
     var textareaPara = document.createElement('textarea');
     textareaPara.setAttribute('wrap', 'off');
     textareaPara.setAttribute('spellcheck', 'false');
@@ -919,10 +935,10 @@ var EditTemplateDialog = function (editorUi) {
     textareaPara.style.marginBottom = '16px';
     textareaPara.style.marginLeft = '4px';
 
-    var templateNameDiv = document.createElement('div');
-    templateNameDiv.style.textAlign = 'center';
-    templateNameDiv.style.fontWeight = 'bold';
-    mxUtils.write(templateNameDiv, cell.getValue());
+    var nameTitle = createTitle(mxResources.get('name') + ':');
+    nameTitle.style.paddingLeft = '5px';
+    nameTitle.style.paddingTop = '5px';
+    nameTitle.style.paddingBottom = '4px';
 
     var paraTitle = createTitle(mxResources.get('parameter') + ':');
     paraTitle.style.paddingLeft = '5px';
@@ -935,11 +951,13 @@ var EditTemplateDialog = function (editorUi) {
     declarationTitle.style.paddingBottom = '4px';
 
     var textareaDec = textareaPara.cloneNode();
-
+    // var textareaName = textareaPara.cloneNode();
+    textareaName.value = cell.getValue();
     textareaPara.value = cell.getParameter();
     textareaDec.value = cell.getDeclaration();
 
-    div.appendChild(templateNameDiv)
+    div.appendChild(nameTitle);
+    div.appendChild(textareaName);
     div.appendChild(paraTitle);
     div.appendChild(textareaPara);
     div.appendChild(declarationTitle);
@@ -965,12 +983,14 @@ var EditTemplateDialog = function (editorUi) {
 
     var okBtn = mxUtils.button(mxResources.get('ok'), function () {
         // Removes all illegal control characters before parsing
+        var dataName = Graph.zapGremlins(mxUtils.trim(textareaName.value));
         var dataPara = Graph.zapGremlins(mxUtils.trim(textareaPara.value));
         var dataDec = Graph.zapGremlins(mxUtils.trim(textareaDec.value));
         var error = null;
 
         editorUi.editor.graph.model.beginUpdate();
         try {
+            editorUi.editor.graph.model.setValue(cell, dataName);
             editorUi.editor.graph.model.setParameter(cell, dataPara);
             editorUi.editor.graph.model.setDeclaration(cell, dataDec);
 
@@ -1000,11 +1020,70 @@ var EditTemplateDialog = function (editorUi) {
 };
 
 /**
- * Constructs a new edit template(for timed automata) dialog.
+ * Constructs a new edit global declaration(for timed automata) dialog.
  */
 var EditDeclarationDialog = function (editorUi) {
     var cell = editorUi.editor.graph.getSelectionCell();
+
     var div = document.createElement('div');
+    // div.className = 'geToolbarContainer';
+    div.style.position = 'absolute';
+    div.style.top = '0px';
+    div.style.left = '0px';
+    div.style.right = '0px';
+    div.style.overflow = 'auto';
+
+    var topDiv = document.createElement('div');
+    div.style.whiteSpace = 'nowrap';
+    div.style.color = 'rgb(112, 112, 112)';
+    div.style.textAlign = 'left';
+    div.style.cursor = 'default';
+
+
+    var decDiv = document.createElement('div');
+    div.style.width = '100%';
+
+    var propertyDiv = decDiv.cloneNode(false);
+
+    var label = document.createElement('div');
+    label.className = 'geFormatSection';
+    label.style.textAlign = 'center';
+    label.style.fontWeight = 'bold';
+    label.style.paddingTop = '8px';
+    label.style.fontSize = '13px';
+    label.style.borderWidth = '0px 0px 0px 0px';
+    label.style.borderStyle = 'solid';
+    label.style.display = (mxClient.IS_QUIRKS) ? 'inline' : 'inline-block';
+    label.style.height = (mxClient.IS_QUIRKS) ? '34px' : '25px';
+    label.style.overflow = 'hidden';
+    label.style.width = '100%';
+    label.style.backgroundColor = 'white';
+    label.style.borderLeftWidth = '1px';
+    label.style.cursor = 'pointer';
+    label.style.width = '33.3%';
+    label.style.width = '33.3%';
+
+    var label2 = label.cloneNode(false);
+    var label3 = label2.cloneNode(false);
+
+    // Workaround for ignored background in IE
+    label2.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
+    label3.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
+    label2.style.borderWidth = '0px 0px 1px 1px';
+    label3.style.borderWidth = '0px 0px 1px 1px';
+
+    label.style.borderLeftWidth = '0px';
+    mxUtils.write(label, mxResources.get('declaration'));
+    topDiv.appendChild(label);
+
+    mxUtils.write(label2, 'Property');
+    topDiv.appendChild(label2);
+
+    mxUtils.write(label3, 'PlaceHold');
+    topDiv.appendChild(label3);
+
+    div.appendChild(topDiv);
+
     var textareaDec = document.createElement('textarea');
     textareaDec.setAttribute('wrap', 'off');
     textareaDec.setAttribute('spellcheck', 'false');
@@ -1016,17 +1095,18 @@ var EditDeclarationDialog = function (editorUi) {
     textareaDec.style.width = '580px';
     textareaDec.style.height = '320px';
     textareaDec.style.marginBottom = '16px';
-    textareaDec.style.marginLeft = '4px';
+    textareaDec.style.marginLeft = '50px';
+    textareaDec.style.marginTop = '25px';
 
-    var declarationTitle = createTitle(mxResources.get('declaration') + ':');
-    declarationTitle.style.paddingLeft = '5px';
-    declarationTitle.style.paddingTop = '5px';
-    declarationTitle.style.paddingBottom = '4px';
+    // var declarationTitle = createTitle(mxResources.get('declaration') + ':');
+    // declarationTitle.style.paddingLeft = '40px';
+    // declarationTitle.style.paddingTop = '25px';
+    // declarationTitle.style.paddingBottom = '4px';
 
     textareaDec.value = editorUi.editor.graph.getModel().getDec();
 
-    div.appendChild(declarationTitle);
-    div.appendChild(textareaDec);
+    //decDiv.appendChild(declarationTitle);
+    decDiv.appendChild(textareaDec);
 
 
     this.init = function () {
@@ -1038,11 +1118,11 @@ var EditDeclarationDialog = function (editorUi) {
         editorUi.hideDialog();
     });
     cancelBtn.style.float = 'right';
-    cancelBtn.style.marginRight = '30px';
+    cancelBtn.style.marginRight = '35px';
     cancelBtn.className = 'geBtn';
 
     if (editorUi.editor.cancelFirst) {
-        div.appendChild(cancelBtn);
+        decDiv.appendChild(cancelBtn);
     }
 
 
@@ -1071,11 +1151,47 @@ var EditDeclarationDialog = function (editorUi) {
     okBtn.className = 'geBtn gePrimaryBtn';
     okBtn.style.float = 'right';
     okBtn.style.marginRight = '5px';
-    div.appendChild(okBtn);
+    decDiv.appendChild(okBtn);
+    div.appendChild(decDiv);
 
-    if (!editorUi.editor.cancelFirst) {
-        div.appendChild(cancelBtn);
-    }
+    var currentLabel = label;
+    var currentPanel = decDiv;
+    mxEvent.addListener(label, 'click', function () {
+        if (currentLabel != label) {
+            label.style.backgroundColor = 'white';
+            label.style.borderBottomWidth = '0px';
+            currentLabel.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
+            currentLabel.style.borderBottomWidth = '1px';
+            currentLabel = label;
+            currentPanel.style.display = 'none';
+            currentPanel = decDiv;
+            currentPanel.style.display = '';
+        }
+    })
+    mxEvent.addListener(label2, 'click', function () {
+        if (currentLabel != label2) {
+            label2.style.backgroundColor = 'white';
+            label2.style.borderBottomWidth = '0px';
+            currentLabel.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
+            currentLabel.style.borderBottomWidth = '1px';
+            currentLabel = label2;
+            currentPanel.style.display = 'none';
+            currentPanel = propertyDiv;
+            currentPanel.style.display = '';
+        }
+    })
+    mxEvent.addListener(label3, 'click', function () {
+        if (currentLabel != label3) {
+            label3.style.backgroundColor = 'white';
+            label3.style.borderBottomWidth = '0px';
+            currentLabel.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
+            currentLabel.style.borderBottomWidth = '1px';
+            currentLabel = label3;
+            currentPanel.style.display = 'none';
+            currentPanel = propertyDiv;
+            currentPanel.style.display = '';
+        }
+    })
 
     this.container = div;
 };

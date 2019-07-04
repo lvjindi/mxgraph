@@ -779,7 +779,7 @@ Sidebar.prototype.addTimedAutomataPalette = function (dir) {
     this.addStencilPalette('committed', 'Timed Automata', null,
         ';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1',
         null, null, null, null, [
-            this.createVertexTemplateEntry('swimlane;', 300, 300, 'Template', 'Template', null, null, 'Template'),
+            this.createVertexTemplateEntry('swimlane;', 600, 300, 'Template', 'Template', null, null, 'Template'),
             this.createVertexTemplateEntry('shape=location;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Location', null, null, 'location'),
             // this.createVertexTemplateEntry('shape=urgent;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Location', null, null, 'urgent'),
             // this.createVertexTemplateEntry('shape=initial;whiteSpace=wrap;html=1;aspect=fixed;', 40, 40, '', 'Initial', null, null, 'initial'),
