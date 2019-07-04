@@ -1039,7 +1039,6 @@ var EditDeclarationDialog = function (editorUi) {
     div.style.textAlign = 'left';
     div.style.cursor = 'default';
 
-
     var decDiv = document.createElement('div');
     div.style.width = '100%';
 
@@ -1142,8 +1141,6 @@ var EditDeclarationDialog = function (editorUi) {
         } finally {
             editorUi.editor.graph.model.endUpdate();
         }
-
-
         if (error != null) {
             mxUtils.alert(error.message);
         }
@@ -1156,43 +1153,70 @@ var EditDeclarationDialog = function (editorUi) {
 
     var currentLabel = label;
     var currentPanel = decDiv;
-    mxEvent.addListener(label, 'click', function () {
-        if (currentLabel != label) {
-            label.style.backgroundColor = 'white';
-            label.style.borderBottomWidth = '0px';
-            currentLabel.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
-            currentLabel.style.borderBottomWidth = '1px';
-            currentLabel = label;
-            currentPanel.style.display = 'none';
-            currentPanel = decDiv;
-            currentPanel.style.display = '';
-        }
-    })
-    mxEvent.addListener(label2, 'click', function () {
-        if (currentLabel != label2) {
-            label2.style.backgroundColor = 'white';
-            label2.style.borderBottomWidth = '0px';
-            currentLabel.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
-            currentLabel.style.borderBottomWidth = '1px';
-            currentLabel = label2;
-            currentPanel.style.display = 'none';
-            currentPanel = propertyDiv;
-            currentPanel.style.display = '';
-        }
-    })
-    mxEvent.addListener(label3, 'click', function () {
-        if (currentLabel != label3) {
-            label3.style.backgroundColor = 'white';
-            label3.style.borderBottomWidth = '0px';
-            currentLabel.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
-            currentLabel.style.borderBottomWidth = '1px';
-            currentLabel = label3;
-            currentPanel.style.display = 'none';
-            currentPanel = propertyDiv;
-            currentPanel.style.display = '';
-        }
-    })
+    var addClickHandler = mxUtils.bind(this, function (elt) {
+        var clickHandler = mxUtils.bind(this, function (evt) {
+            if (currentLabel != elt) {
+                elt.style.backgroundColor = 'white';
+                elt.style.borderBottomWidth = '0px';
+                currentLabel.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
+                currentLabel.style.borderBottomWidth = '1px';
+                currentLabel = elt;
+                currentPanel.style.display = 'none';
+                if (currentLabel == label) {
+                    currentPanel = decDiv;
+                } else if (currentLabel == label2) {
+                    currentPanel = propertyDiv;
+                } else if (currentLabel == label3) {
+                    currentPanel = propertyDiv;
+                }
+                currentPanel.style.display = '';
+            }
 
+        });
+        mxEvent.addListener(elt, 'click', clickHandler);
+    });
+
+    // mxEvent.addListener(label, 'click', function () {
+    //     if (currentLabel != label) {
+    //         label.style.backgroundColor = 'white';
+    //         label.style.borderBottomWidth = '0px';
+    //         currentLabel.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
+    //         currentLabel.style.borderBottomWidth = '1px';
+    //         currentLabel = label;
+    //         currentPanel.style.display = 'none';
+    //         currentPanel = decDiv;
+    //         currentPanel.style.display = '';
+    //     }
+    // })
+    //
+    // mxEvent.addListener(label2, 'click', function () {
+    //     if (currentLabel != label2) {
+    //         label2.style.backgroundColor = 'white';
+    //         label2.style.borderBottomWidth = '0px';
+    //         currentLabel.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
+    //         currentLabel.style.borderBottomWidth = '1px';
+    //         currentLabel = label2;
+    //         currentPanel.style.display = 'none';
+    //         currentPanel = propertyDiv;
+    //         currentPanel.style.display = '';
+    //     }
+    // })
+    //
+    // mxEvent.addListener(label3, 'click', function () {
+    //     if (currentLabel != label3) {
+    //         label3.style.backgroundColor = 'white';
+    //         label3.style.borderBottomWidth = '0px';
+    //         currentLabel.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
+    //         currentLabel.style.borderBottomWidth = '1px';
+    //         currentLabel = label3;
+    //         currentPanel.style.display = 'none';
+    //         currentPanel = propertyDiv;
+    //         currentPanel.style.display = '';
+    //     }
+    // })
+    addClickHandler(label);
+    addClickHandler(label2);
+    addClickHandler(label3);
     this.container = div;
 };
 
