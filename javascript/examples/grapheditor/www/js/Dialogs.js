@@ -4,6 +4,7 @@
 /**
  * Constructs a new open dialog.
  */
+
 var OpenDialog = function () {
     var iframe = document.createElement('iframe');
     iframe.style.backgroundColor = 'transparent';
@@ -778,6 +779,7 @@ var EditDiagramDialog = function (editorUi) {
 };
 var createTitle = function (title) {
     var div = document.createElement('div');
+    div.style.color = '#5B5B5B';
     div.style.padding = '0px 0px 6px 0px';
     div.style.whiteSpace = 'nowrap';
     div.style.overflow = 'hidden';
@@ -1024,28 +1026,49 @@ var EditTemplateDialog = function (editorUi) {
  */
 var EditDeclarationDialog = function (editorUi) {
     var cell = editorUi.editor.graph.getSelectionCell();
+    //为了标记textProDisplay里的Div
+    var index = 0;
+    var lineList = [];
+
+    var proListTitle = createTitle('Property List');
+    proListTitle.style.marginLeft = '50px';
+    proListTitle.style.marginBottom = '0px';
+    proListTitle.style.marginTop = '20px';
+
+    var proEditTitle = createTitle('Property Edit');
+    proEditTitle.style.marginLeft = '50px';
+    proEditTitle.style.marginBottom = '0px';
+    proEditTitle.style.marginTop = '5px';
+
+    var commentTitle = createTitle('Comment');
+    commentTitle.style.marginLeft = '50px';
+    commentTitle.style.marginBottom = '0px';
+    commentTitle.style.marginTop = '5px';
 
     var div = document.createElement('div');
-    // div.className = 'geToolbarContainer';
     div.style.position = 'absolute';
     div.style.top = '0px';
     div.style.left = '0px';
     div.style.right = '0px';
-    div.style.overflow = 'auto';
+    div.style.overflow = 'hidden';
 
     var topDiv = document.createElement('div');
-    div.style.whiteSpace = 'nowrap';
-    div.style.color = 'rgb(112, 112, 112)';
-    div.style.textAlign = 'left';
-    div.style.cursor = 'default';
+    topDiv.style.whiteSpace = 'nowrap';
+    topDiv.style.color = 'rgb(112, 112, 112)';
+    topDiv.style.textAlign = 'left';
+    topDiv.style.cursor = 'default';
+    topDiv.style.overflow = 'hidden';
 
     var decDiv = document.createElement('div');
-    div.style.width = '100%';
+    decDiv.style.width = '100%';
+    decDiv.style.overflow = 'auto';
 
     var propertyDiv = decDiv.cloneNode(false);
+    propertyDiv.style.overflow = 'hidden';
 
     var label = document.createElement('div');
     label.className = 'geFormatSection';
+    label.style.color = 'black';
     label.style.textAlign = 'center';
     label.style.fontWeight = 'bold';
     label.style.paddingTop = '8px';
@@ -1095,33 +1118,124 @@ var EditDeclarationDialog = function (editorUi) {
     textareaDec.style.height = '320px';
     textareaDec.style.marginBottom = '16px';
     textareaDec.style.marginLeft = '50px';
-    textareaDec.style.marginTop = '25px';
+    textareaDec.style.marginTop = '20px';
 
-    // var declarationTitle = createTitle(mxResources.get('declaration') + ':');
-    // declarationTitle.style.paddingLeft = '40px';
-    // declarationTitle.style.paddingTop = '25px';
-    // declarationTitle.style.paddingBottom = '4px';
+    var textProDiv = document.createElement('div')
+    textProDiv.style.width = '580px';
+    textProDiv.style.height = '120px';
+    textProDiv.style.marginLeft = '50px';
+    textProDiv.style.marginBottom = '16px';
+    textProDiv.style.marginTop = '5px';
+
+    var buttonDiv = document.createElement('div')
+    buttonDiv.style.width = '60px';
+    buttonDiv.style.height = '120px';
+    buttonDiv.style.marginBottom = '16px';
+    buttonDiv.style.marginTop = '5px';
+    buttonDiv.style.marginRight = '10px';
+    buttonDiv.style.float = 'right';
+
+    var textProDisplay = document.createElement('div')
+    textProDisplay.style.width = '470px';
+    textProDisplay.style.height = '120px';
+    textProDisplay.style.border = '0.5px solid grey';
+    textProDisplay.style.marginBottom = '16px';
+    textProDisplay.style.marginTop = '5px';
+
+    var textProEdit = textareaDec.cloneNode(false);
+    textProEdit.style.height = '60px';
+    textProEdit.style.overflow = 'auto';
+    textProEdit.style.marginTop = '0px';
+
+    var textProComment = textProEdit.cloneNode(false);
 
     textareaDec.value = editorUi.editor.graph.getModel().getDec();
+    var proList = editorUi.editor.graph.getModel().getProList();
+    var comList = editorUi.editor.graph.getModel().getCommentList();
+    parse2str(textProDisplay, proList, comList);
 
-    //decDiv.appendChild(declarationTitle);
     decDiv.appendChild(textareaDec);
 
+
+    mxEvent.addListener(textProEdit, 'change', function (evt) {
+        var newValue = textProEdit.value;
+        editorUi.editor.graph.getModel().setProList(index, newValue);
+        var updateList = editorUi.editor.graph.getModel().getProList();
+        lineList[index].innerText = updateList[index];
+
+    })
+
+    mxEvent.addListener(textProComment, 'change', function (evt) {
+        var newValue = textProComment.value;
+        editorUi.editor.graph.getModel().setCommentList(index, newValue);
+    })
+
+    function addClickHandler1(elt, i) {
+        var clickHandler = mxUtils.bind(this, function (evt) {
+
+            if (lineList[i] != lineList[index]) {
+
+                lineList[i].style.backgroundColor = '#3A5FCD';
+                lineList[i].style.color = 'white';
+                lineList[index].style.backgroundColor = 'white';
+                lineList[index].style.color = 'black';
+                index = i;
+                textProEdit.value = lineList[index].innerText;
+
+            } else {
+                lineList[i].style.backgroundColor = '#3A5FCD';
+                lineList[i].style.color = 'white';
+                textProEdit.value = lineList[index].innerText
+                index = i;
+
+            }
+
+            textProComment.value = comList[index];
+        });
+        mxEvent.addListener(elt, 'click', clickHandler);
+    }
+
+
+    function parse2str(panel, list, comList) {
+        // var str = '';
+        for (var i = 0; i < list.length; i++) {
+            var lineDiv = document.createElement('div');
+            lineDiv.style.width = '468px';
+            lineDiv.style.paddingLeft = '2px';
+            lineDiv.style.marginTop = '0.5px';
+            lineDiv.style.paddingBottom = '4px';
+            lineList.push(lineDiv);
+            lineDiv.innerText = list[i];
+            panel.appendChild(lineDiv);
+        }
+
+        //给每个div加监听器
+        for (var i = 0; i < lineList.length; i++) {
+            addClickHandler1(lineList[i], i);
+        }
+    }
 
     this.init = function () {
         textareaDec.focus();
     };
 
-
     var cancelBtn = mxUtils.button(mxResources.get('cancel'), function () {
+        editorUi.hideDialog();
+    });
+    var cancelBtn2 = mxUtils.button(mxResources.get('cancel'), function () {
         editorUi.hideDialog();
     });
     cancelBtn.style.float = 'right';
     cancelBtn.style.marginRight = '35px';
     cancelBtn.className = 'geBtn';
 
+    cancelBtn2.style.float = 'right';
+    cancelBtn2.style.marginRight = '35px';
+    cancelBtn2.className = 'geBtn';
+
     if (editorUi.editor.cancelFirst) {
         decDiv.appendChild(cancelBtn);
+        // propertyDiv.appendChild(cancelBtn2);
     }
 
 
@@ -1129,11 +1243,9 @@ var EditDeclarationDialog = function (editorUi) {
         // Removes all illegal control characters before parsing
         var dataDec = Graph.zapGremlins(mxUtils.trim(textareaDec.value));
         var error = null;
-
         editorUi.editor.graph.model.beginUpdate();
         try {
             editorUi.editor.graph.model.setDec(dataDec);
-
             // LATER: Why is hideDialog between begin-/endUpdate faster?
             editorUi.hideDialog();
         } catch (e) {
@@ -1151,6 +1263,76 @@ var EditDeclarationDialog = function (editorUi) {
     decDiv.appendChild(okBtn);
     div.appendChild(decDiv);
 
+    var addBtn = mxUtils.button(mxResources.get('add'), function () {
+        // Removes all illegal control characters before parsing
+
+        // var dataPro = Graph.zapGremlins(mxUtils.trim(textPro.value));
+
+        var lineDiv = document.createElement('div');
+        lineDiv.style.width = '468px';
+        lineDiv.style.height = '12px';
+        lineDiv.style.paddingLeft = '2px';
+        lineDiv.style.marginTop = '0.5px';
+        lineDiv.style.paddingBottom = '4px';
+        lineList.push(lineDiv);
+        lineDiv.innerText = '';
+        editorUi.editor.graph.getModel().addProListEle('');
+        editorUi.editor.graph.getModel().addCommentListEle('');
+
+        textProDisplay.appendChild(lineDiv);
+        lineList[index].style.backgroundColor = 'white';
+        lineList[index].style.color = 'black';
+        lineDiv.style.backgroundColor = '#3A5FCD';
+        lineDiv.style.color = 'white';
+        var newProList = editorUi.editor.graph.getModel().getProList();
+        var newComList = editorUi.editor.graph.getModel().getCommentList();
+        textProEdit.value = newProList[newProList.length - 1];
+        textProComment.value = newComList[newComList.length - 1];
+        index = newComList.length - 1;
+
+        var currentLine = lineList[lineList.length - 1];
+        addClickHandler1(lineDiv, lineList.length - 1, currentLine);
+
+    });
+    addBtn.className = 'geBtn gePrimaryBtn';
+    addBtn.style.float = 'right';
+    addBtn.style.marginRight = '5px';
+
+
+    var deleteBtn = mxUtils.button(mxResources.get('delete'), function () {
+        textProDisplay.removeChild(lineList[index]);
+        proList.splice(index, 1);
+        comList.splice(index, 1);
+        lineList.splice(index, 1);
+        index = index - 1;
+        lineList[index].style.backgroundColor = '#3A5FCD';
+        lineList[index].style.color = 'white';
+        textProEdit.value = proList[index];
+        textProComment.value = comList[index];
+
+    });
+
+    deleteBtn.className = 'geBtn gePrimaryBtn';
+    deleteBtn.style.float = 'right';
+    deleteBtn.style.marginRight = '5px';
+    deleteBtn.style.marginTop = '10px';
+
+
+    buttonDiv.appendChild(addBtn);
+    buttonDiv.appendChild(deleteBtn);
+    textProDiv.appendChild(buttonDiv);
+    textProDiv.appendChild(textProDisplay);
+    propertyDiv.appendChild(proListTitle);
+    propertyDiv.appendChild(textProDiv);
+    propertyDiv.appendChild(proEditTitle);
+    propertyDiv.appendChild(textProEdit);
+    propertyDiv.appendChild(commentTitle);
+    propertyDiv.appendChild(textProComment);
+
+    if (editorUi.editor.cancelFirst) {
+        propertyDiv.appendChild(cancelBtn2);
+    }
+
     var currentLabel = label;
     var currentPanel = decDiv;
     var addClickHandler = mxUtils.bind(this, function (elt) {
@@ -1164,6 +1346,7 @@ var EditDeclarationDialog = function (editorUi) {
                 currentPanel.style.display = 'none';
                 if (currentLabel == label) {
                     currentPanel = decDiv;
+
                 } else if (currentLabel == label2) {
                     currentPanel = propertyDiv;
                 } else if (currentLabel == label3) {
@@ -1171,49 +1354,11 @@ var EditDeclarationDialog = function (editorUi) {
                 }
                 currentPanel.style.display = '';
             }
-
+            div.appendChild(currentPanel);
         });
         mxEvent.addListener(elt, 'click', clickHandler);
     });
 
-    // mxEvent.addListener(label, 'click', function () {
-    //     if (currentLabel != label) {
-    //         label.style.backgroundColor = 'white';
-    //         label.style.borderBottomWidth = '0px';
-    //         currentLabel.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
-    //         currentLabel.style.borderBottomWidth = '1px';
-    //         currentLabel = label;
-    //         currentPanel.style.display = 'none';
-    //         currentPanel = decDiv;
-    //         currentPanel.style.display = '';
-    //     }
-    // })
-    //
-    // mxEvent.addListener(label2, 'click', function () {
-    //     if (currentLabel != label2) {
-    //         label2.style.backgroundColor = 'white';
-    //         label2.style.borderBottomWidth = '0px';
-    //         currentLabel.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
-    //         currentLabel.style.borderBottomWidth = '1px';
-    //         currentLabel = label2;
-    //         currentPanel.style.display = 'none';
-    //         currentPanel = propertyDiv;
-    //         currentPanel.style.display = '';
-    //     }
-    // })
-    //
-    // mxEvent.addListener(label3, 'click', function () {
-    //     if (currentLabel != label3) {
-    //         label3.style.backgroundColor = 'white';
-    //         label3.style.borderBottomWidth = '0px';
-    //         currentLabel.style.backgroundColor = Format.prototype.inactiveTabBackgroundColor;
-    //         currentLabel.style.borderBottomWidth = '1px';
-    //         currentLabel = label3;
-    //         currentPanel.style.display = 'none';
-    //         currentPanel = propertyDiv;
-    //         currentPanel.style.display = '';
-    //     }
-    // })
     addClickHandler(label);
     addClickHandler(label2);
     addClickHandler(label3);

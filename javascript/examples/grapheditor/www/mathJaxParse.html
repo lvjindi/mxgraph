@@ -1,0 +1,75 @@
+<meta http-equiv="X-UA-Compatible" content="IE=5,IE=9"><![endif]-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--<script type="text/javascript" src="/js/jquery-1.11.0.min.js"></script>-->
+    <script type="text/javascript"
+            src="../../../MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
+    <script type="text/javascript">
+        mxBasePath = '../../../src';
+    </script>
+    <script type="text/javascript" src="../../../src/js/mxClient.js"></script>
+</head>
+<body>
+
+<div id="container"></div>
+<script type="text/x-mathjax-config">
+
+       MathJax.Hub.Config({
+       tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+    }
+});
+    alert('haha')
+
+    var textareaPro = document.createElement('textarea');
+    textareaPro.setAttribute('wrap', 'off');
+    textareaPro.setAttribute('spellcheck', 'false');
+    textareaPro.setAttribute('autocorrect', 'off');
+    textareaPro.setAttribute('autocomplete', 'off');
+    textareaPro.setAttribute('autocapitalize', 'off');
+    textareaPro.style.overflow = 'auto';
+    textareaPro.style.resize = 'none';
+    textareaPro.style.width = '580px';
+    textareaPro.style.height = '320px';
+    textareaPro.style.marginBottom = '16px';
+    textareaPro.style.marginLeft = '50px';
+    textareaPro.style.marginTop = '20px';
+    textareaPro.id='propertyInput';
+
+    var container = document.getElementById("container");
+
+    //var text = document.createElement('textarea');
+    var div = document.createElement('div');
+    // div.innerText = '$\\alpha+\\beta=\\gamma$';
+
+    container.appendChild(textareaPro)
+    container.appendChild(div)
+
+    mxEvent.addListener(textareaPro, 'change', function () {
+        var value = textareaPro.value;
+        div.innerText = value;
+        MathJax.Hub.Typeset(div);
+
+    })
+
+
+
+
+
+
+
+
+
+</script>
+<script type="text/javascript">
+
+
+</script>
+
+<!--<div><textarea id="post-content" style="height: 50px;width: 300px;"></textarea></div>-->
+</body>
+</html>

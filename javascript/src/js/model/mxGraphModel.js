@@ -235,6 +235,42 @@ mxGraphModel.prototype.getDec = function () {
     return this.dec;
 
 }
+
+/**
+ * 新添参数：property
+ * */
+// mxGraphModel.prototype.property = '';
+// mxGraphModel.prototype.comment = '';
+
+mxGraphModel.prototype.propertyList = ['test', 'test1'];
+mxGraphModel.prototype.commentList = ['haha', 'yeye'];
+
+mxGraphModel.prototype.propertiesList = [mxGraphModel.prototype.propertyList, mxGraphModel.prototype.commentList];
+
+mxGraphModel.prototype.setProList = function (index, pro) {
+    this.propertyList[index] = pro;
+
+}
+
+mxGraphModel.prototype.getProList = function () {
+    return this.propertyList;
+}
+
+mxGraphModel.prototype.addProListEle = function (ele) {
+    this.propertyList.push(ele);
+}
+
+mxGraphModel.prototype.setCommentList = function (index, comment) {
+    this.commentList[index] = comment;
+
+}
+
+mxGraphModel.prototype.getCommentList = function () {
+    return this.commentList;
+}
+mxGraphModel.prototype.addCommentListEle = function (ele) {
+    this.commentList.push(ele);
+}
 //------------------------------------------------------------------------------------------------------------------
 
 
@@ -1593,7 +1629,7 @@ mxGraphModel.prototype.setRateOfExponential = function (cell, value) {
  * {
  *   var previous = cell.value.getAttribute('label');
  *   cell.value.setAttribute('label', value);
- *   
+ *
  *   return previous;
  * };
  * (end)
