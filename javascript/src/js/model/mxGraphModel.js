@@ -242,10 +242,8 @@ mxGraphModel.prototype.getDec = function () {
 // mxGraphModel.prototype.property = '';
 // mxGraphModel.prototype.comment = '';
 
-mxGraphModel.prototype.propertyList = ['test', 'test1'];
-mxGraphModel.prototype.commentList = ['haha', 'yeye'];
-
-mxGraphModel.prototype.propertiesList = [mxGraphModel.prototype.propertyList, mxGraphModel.prototype.commentList];
+mxGraphModel.prototype.propertyList = [];
+mxGraphModel.prototype.commentList = [];
 
 mxGraphModel.prototype.setProList = function (index, pro) {
     this.propertyList[index] = pro;

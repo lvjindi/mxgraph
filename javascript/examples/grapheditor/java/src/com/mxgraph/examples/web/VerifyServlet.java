@@ -1,9 +1,15 @@
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import javax.swing.plaf.synth.SynthTextAreaUI;
-import java.io.File;
-import java.io.FileOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.io.*;
+import java.net.URLDecoder;
 import java.util.*;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.sun.javafx.collections.MappingChange;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -12,17 +18,84 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-public class parseServlet extends HttpServlet {
+public class VerifyServlet extends HttpServlet {
+    private List<String> lists = new ArrayList<String>();
 
-    public static void main(String[] args) throws Exception {
-        parseXml();
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response) throws ServletException, IOException {
+
+        String xml = URLDecoder.decode(request.getParameter("xml"), "UTF-8").replace("\n", "&#xa;");
+        String query = request.getParameter("property");
+        System.out.println(query);
+        try {
+            parseXml(xml, query);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        BufferedReader br = null;
+        try {
+            String cmd = "E:\\program\\uppaal-4.1.19\\bin-Win32\\verifyta  E:\\program\\uppaal-4.1.19\\demo\\bridge.xml E:\\program\\uppaal-4.1.19\\demo\\query.xml";
+            // 执行dos命令并获取输出结果
+            Process proc = Runtime.getRuntime().exec(cmd);
+            br = new BufferedReader(new InputStreamReader(proc.getInputStream(), "GBK"));
+            String line;
+            while ((line = br.readLine()) != null) {
+                lists.add(line);
+                System.out.println(line);
+            }
+            proc.waitFor();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+    }
+
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response) throws ServletException, IOException {
+
+        String json = JSON.toJSONString(lists);
+        response.setCharacterEncoding("utf-8");
+        //JSONObject  jsonStr = JSONObject.parseObject(JSON.toJSONString(map));
+        PrintWriter writer = response.getWriter();
+        writer.print(json);
+
+
+        System.out.println(json);
 
     }
 
     //将mxgraph输出的xml转化成uppal的xml形式
-    public static void parseXml() throws Exception {
+    public static void parseXml(String xml, String query) throws Exception {
+
+        File file = new File("E:\\LabProject\\mxgraph\\temp.xml");
+        BufferedWriter out = new BufferedWriter(new FileWriter(file));
+        // 把数据写入到输出流
+        out.write(xml);
+        // 关闭输出流
+        out.close();
+
+        File fileQuery = new File("E:\\LabProject\\mxgraph\\query.txt");
+        BufferedWriter out1 = new BufferedWriter(new FileWriter(fileQuery));
+        // 把数据写入到输出流
+        out1.write(query);
+        // 关闭输出流
+        out1.close();
+
+
         SAXReader reader = new SAXReader();
-        File file = new File("E:\\LabProject\\mxgraph\\Drawing1.xml");
+//        File file = new File("E:\\LabProject\\mxgraph\\forProperty1.xml");
         Document doc = reader.read(file);//read
 
         Document doc1 = DocumentHelper.createDocument();//write
@@ -31,6 +104,7 @@ public class parseServlet extends HttpServlet {
         List<Element> templateList = new ArrayList<>();
         List<Element> vertexList = new ArrayList<>();
         List<Element> edgeList = new ArrayList<>();
+        List<Element> queryList = new ArrayList<>();
 
         Element root = doc.getRootElement();
         Element list = root.element("root");
@@ -50,6 +124,11 @@ public class parseServlet extends HttpServlet {
                 templateList.add(cell);
             }
 
+            if (cell.getName() == "queries") {
+                queryList = cell.elements();
+
+            }
+
             if (findCellAttribute(cell, "vertex") != null) {
                 vertexList.add(cell);
             } else if (findCellAttribute(cell, "edge") != null) {
@@ -67,6 +146,7 @@ public class parseServlet extends HttpServlet {
             Iterator<Element> vertexIterator = vertexList.iterator();
             Iterator<Element> edgeIterator = edgeList.iterator();
 
+            //先写点
             while (vertexIterator.hasNext()) {
                 Element vertex = vertexIterator.next();
                 Attribute parent = findCellAttribute(vertex, "parent");
@@ -83,6 +163,7 @@ public class parseServlet extends HttpServlet {
             Element initial = template.addElement("init");
             initial.addAttribute("ref", initialId);
 
+            //后写边
             while (edgeIterator.hasNext()) {
                 Element edge = edgeIterator.next();
                 Attribute parent = findCellAttribute(edge, "parent");
@@ -91,6 +172,10 @@ public class parseServlet extends HttpServlet {
                 }
             }
         }
+
+        Element queries = root1.addElement("queries");
+        Iterator<Element> queryIterator = queryList.iterator();
+        createQueries(queries, queryIterator);
 
         XMLWriter writer = new XMLWriter(new FileOutputStream("parse.xml"),
                 OutputFormat.createPrettyPrint());
@@ -126,6 +211,30 @@ public class parseServlet extends HttpServlet {
             guard.addAttribute("kind", attr.getName());
         }
         guard.addText(attr.getValue());
+    }
+
+    public static void createQueries(Element queries, Iterator<Element> queryIterator) {
+        while (queryIterator.hasNext()) {
+            Element queryEle = queryIterator.next();
+            if (queryEle.getName() == "query") {
+                Element query = queries.addElement("query");
+                if (haschildren(queryEle)) {
+                    List<Element> children = queryEle.elements();
+                    Iterator<Element> child = children.iterator();
+                    while (child.hasNext()) {
+                        Element item = child.next();
+                        if (item.getName() == "formula") {
+                            Element formula = query.addElement("formula");
+                            formula.addText(item.getText());
+                        }
+                        if (item.getName() == "comment") {
+                            Element comment = query.addElement("comment");
+                            comment.addText(item.getText());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public static boolean haschildren(Element ele) {

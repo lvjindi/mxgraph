@@ -335,3 +335,4 @@ declaration=Declaration
 locationEdit=Location Edit
 templateEdit=Template Edit
 editDeclaration=Edit Declaration
+verify=Verify

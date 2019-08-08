@@ -22,10 +22,24 @@ mxCodecRegistry.register(function () {
     codec.encodeObject = function (enc, obj, node) {
         var rootNode = enc.document.createElement('root');
         var declaration = enc.document.createElement("declaration");
-        //mxUtils.setTextContent(parameter, obj.getParameter());
         mxUtils.setTextContent(declaration, obj.getDec());
         //rootNode.appendChild(parameter);
         rootNode.appendChild(declaration);
+        var queries = enc.document.createElement('queries');
+        var proList = obj.getProList();
+        var comList = obj.getCommentList();
+        for (var i = 0; i < proList.length; i++) {
+            var query = enc.document.createElement('query');
+            var formula = enc.document.createElement('formula');
+            var comment = enc.document.createElement('comment');
+            mxUtils.setTextContent(formula, proList[i]);
+            mxUtils.setTextContent(comment, comList[i]);
+            query.appendChild(formula);
+            query.appendChild(comment);
+            queries.appendChild(query);
+        }
+        //mxUtils.setTextContent(parameter, obj.getParameter());
+        rootNode.appendChild(queries);
         enc.encodeCell(obj.getRoot(), rootNode);
         node.appendChild(rootNode);
 

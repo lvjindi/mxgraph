@@ -1263,6 +1263,50 @@ var EditDeclarationDialog = function (editorUi) {
     decDiv.appendChild(okBtn);
     div.appendChild(decDiv);
 
+    var verifyBtn = mxUtils.button(mxResources.get('verify'), function () {
+        var pro = proList[index];
+        var xmlDoc = mxUtils.createXmlDocument();
+        var root = xmlDoc.createElement('output');
+
+        xmlDoc.appendChild(root);
+        var data = {
+            'property': pro,
+            'xml': encodeURIComponent(mxUtils.getXml(editorUi.editor.getGraphXml()))
+        };
+
+        $.ajax({
+            url: VERIFY_URL,
+            type: 'POST',
+            async: false,
+            data: data,
+            success: function (data) {
+                console.log();
+            },
+            error: function () {
+                alert("Fail To Export");
+            }
+        });
+
+        $.ajax({
+            url: VERIFY_URL,
+            async: false,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                alert(data[0]);
+                console.log();
+            },
+            error: function () {
+                alert("Fail To Export");
+            }
+        });
+
+    });
+    verifyBtn.className = 'geBtn gePrimaryBtn';
+    verifyBtn.style.float = 'right';
+    verifyBtn.style.marginRight = '5px';
+    verifyBtn.style.marginBottom = '10px';
+
     var addBtn = mxUtils.button(mxResources.get('add'), function () {
         // Removes all illegal control characters before parsing
 
@@ -1317,7 +1361,7 @@ var EditDeclarationDialog = function (editorUi) {
     deleteBtn.style.marginRight = '5px';
     deleteBtn.style.marginTop = '10px';
 
-
+    buttonDiv.appendChild(verifyBtn);
     buttonDiv.appendChild(addBtn);
     buttonDiv.appendChild(deleteBtn);
     textProDiv.appendChild(buttonDiv);
@@ -1853,7 +1897,7 @@ ExportDialog.exportFile = function (editorUi, name, format, bg, s, b) {
                 'w': w,
                 'h': h,
                 'xml': encodeURIComponent(mxUtils.getXml(root)),
-            }
+            };
             $.ajax({
                 url: EXPORT_URL,
                 type: 'POST',
