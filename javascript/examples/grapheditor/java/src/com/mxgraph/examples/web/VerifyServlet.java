@@ -35,6 +35,7 @@ public class VerifyServlet extends HttpServlet {
 
         BufferedReader br = null;
         try {
+            //执行uppal命令
             String cmd = "E:\\program\\uppaal-4.1.19\\bin-Win32\\verifyta  E:\\program\\uppaal-4.1.19\\demo\\bridge.xml E:\\program\\uppaal-4.1.19\\demo\\query.xml";
             // 执行dos命令并获取输出结果
             Process proc = Runtime.getRuntime().exec(cmd);
